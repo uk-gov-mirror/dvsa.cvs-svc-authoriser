@@ -6,7 +6,7 @@ import {PolicyDocument} from "aws-lambda";
 class Policy {
     private readonly principalId: string;
     private readonly policyDocument: PolicyDocument;
-    private readonly usageIdentifierKey: string;
+    private readonly usageIdentifierKey?: string | undefined;
     private readonly context?: any;
 
     /**
@@ -16,11 +16,11 @@ class Policy {
      * @param usageIdentifierKey - AWS usage plan's API key
      * @param context - an object containing any information to be sent to the lambda function being called.
      */
-    constructor(principalId: string, policyDocument: PolicyDocument, usageIdentifierKey: string, context?: any) {
+    constructor(principalId: string, policyDocument: PolicyDocument, usageIdentifierKey?: string, context?: any) {
         this.principalId = principalId;
         this.policyDocument = policyDocument;
-        this.usageIdentifierKey = usageIdentifierKey;
-        this.context = (context) ? context : null;
+        this.usageIdentifierKey = (usageIdentifierKey) ? usageIdentifierKey : undefined;
+        this.context = (context) ? context : undefined;
     }
 }
 
