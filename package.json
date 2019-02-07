@@ -1,0 +1,40 @@
+{
+  "name": "cvs-svc-authoriser",
+  "version": "1.0.0",
+  "description": "Lambda authoriser for validating a user's Azure AD JWT and generating an access policy.",
+  "main": "handler.js",
+  "scripts": {
+    "build": "node_modules/typescript/bin/tsc --rootDir ./src --outDir build --sourceMap false && npm run build:copy && npm run build:install",
+    "build:copy": "cp package.json package-lock.json build && cd src && find ./**/*.yml | cpio -pdm ../build",
+    "build:install": "cd build && npm install --production",
+    "test": "node_modules/.bin/mocha tests/**/*.unitTest.js",
+    "sonar-scanner": "echo 'TODO'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsonwebtoken": "^8.4.0",
+    "node-yaml": "^3.1.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.17",
+    "@types/jsonwebtoken": "^8.3.0",
+    "@types/lodash.mapvalues": "^4.6.4",
+    "@types/node": "^10.12.18",
+    "@types/request-promise": "^4.1.42",
+    "chai": "^4.2.0",
+    "gulp": "^4.0.0",
+    "mocha": "^5.2.0",
+    "serverless": "^1.36.3",
+    "serverless-dynamodb-local": "^0.2.36",
+    "serverless-offline": "^4.2.0",
+    "serverless-plugin-typescript": "^1.1.5",
+    "supertest": "^3.4.2",
+    "swagger-jsdoc": "^3.2.6",
+    "tslint": "^5.12.1",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.2.4"
+  }
+}
