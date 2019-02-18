@@ -2,6 +2,8 @@ def label = "jenkins-node-${UUID.randomUUID().toString()}"
 podTemplate(label: label, containers: [
     containerTemplate(name: 'node', image: '086658912680.dkr.ecr.eu-west-1.amazonaws.com/cvs/nodejs-builder:latest', ttyEnabled: true, alwaysPullImage: true, command: 'cat'),]){
     node(label) {
+        
+        SECRET_ID = "build/config/config.yml"
 
         stage('checkout') {
             checkout scm
@@ -33,6 +35,13 @@ podTemplate(label: label, containers: [
 
             stage ("unit test") {
                 sh "npm run test"
+            }
+            
+            stage('Fetching Secrets') {
+              withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'jenkins-iam', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                  sh "cd build && mkdir config && touch config/config.xml"
+                  sh "aws secretsmanager get-secret-value --secret-id ${SECRET_ID} --query SecretString --region=eu-west-1 | jq . --raw-output > build/config/config.xml"
+              }
             }
 
             stage("zip dir"){
