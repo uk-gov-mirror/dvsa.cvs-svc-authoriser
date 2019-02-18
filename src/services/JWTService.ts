@@ -19,6 +19,11 @@ class JWTService {
             throw new AuthorizationError("Azure configuration is not valid.")
         }
 
+        // Check if the role is correct
+        if (!decodedToken.payload.roles && !decodedToken.payload.roles.includes("CVSFullAccess")) {
+            throw new AuthorizationError("Invalid roles");
+        }
+
         let endpoint = config.azure.jwk_endpoint.replace(":tennant", config.azure.tennant);
         return JWTService.fetchJWK(endpoint, decodedToken.header.kid)
             .then((x5c: string) => {
