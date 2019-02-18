@@ -19,7 +19,7 @@ describe('Lambda Authoriser', () => {
         };
 
         it('should fail', () => {
-            authoriser.authoriser(event, CONTEXT);
+            authoriser.handler(event, CONTEXT);
             expect(CONTEXT.isFailed).to.equal(true);
         })
     });
@@ -41,7 +41,7 @@ describe('Lambda Authoriser', () => {
         };
 
         it('should fail', () => {
-            authoriser.authoriser(event, CONTEXT);
+            authoriser.handler(event, CONTEXT);
             expect(CONTEXT.isFailed).to.equal(true);
         })
     });

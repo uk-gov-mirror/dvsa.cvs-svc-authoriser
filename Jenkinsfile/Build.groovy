@@ -8,13 +8,16 @@ podTemplate(label: label, containers: [
         }
 
         container('node'){
-            
+
             withFolderProperties{
                 LBRANCH="${env.BRANCH}".toLowerCase()
             }
-            
+
             stage ("npm deps") {
                 sh "npm install"
+            }
+
+            stage ("build") {
                 sh "npm run build"
             }
 
@@ -33,12 +36,8 @@ podTemplate(label: label, containers: [
             }
 
             stage("zip dir"){
-                sh "rm -rf ./node_modules"
-                sh "npm install --production"
-                sh "mkdir ${LBRANCH}"
-                sh "cp -r src/* ${LBRANCH}/"
-                sh "cp -r node_modules ${LBRANCH}/node_modules"
-                sh "cd ${LBRANCH} && zip -qr ../${LBRANCH}.zip *"
+                sh "cd build && rm package.json package-lock.json" // These are no longer needed
+                sh "cd build && zip -qr ../${LBRANCH}.zip ." // ZIP contents of build
             }
 
             stage("upload to s3") {
@@ -48,7 +47,7 @@ podTemplate(label: label, containers: [
                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
 
                 sh "aws s3 cp ${LBRANCH}.zip s3://cvs-services/authoriser/${LBRANCH}.zip --metadata sha256sum=\"\$(openssl dgst -sha256 -binary ${LBRANCH}.zip | openssl enc -base64)\""
-    
+
                 }
             }
         }

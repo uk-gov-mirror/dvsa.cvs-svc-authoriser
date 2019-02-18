@@ -1,7 +1,5 @@
 import * as JWT from 'jsonwebtoken';
 import * as http from 'request-promise';
-// @ts-ignore
-import * as yml from 'node-yaml';
 import {Configuration} from "../utils/Configuration";
 import {resolve} from "path";
 import AuthorizationError from "../models/exceptions/AuthorizationError";
@@ -14,7 +12,7 @@ class JWTService {
 
     public static async verify(token: string): Promise<any> {
         let decodedToken: any = JWT.decode(token, { complete: true });
-        let config: any = Configuration.getInstance(resolve('src/config/config.yml')).getConfig();
+        let config: any = Configuration.getInstance(resolve(`${__dirname}/../config/config.yml`)).getConfig();
 
         // Check if config is valid
         if (!config || !config.azure || !config.azure.tennant || !config.azure.appId || !config.azure.issuer || !config.azure.jwk_endpoint) {

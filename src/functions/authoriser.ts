@@ -23,7 +23,7 @@ const authoriser: Handler = async (event: any, context: Context): Promise<Policy
     const [authorization, token] = event.authorizationToken.split(" ");
 
     if (authorization !== "Bearer") {
-        context.fail("Authorization methods accepted: Bearer.\nEvent dump:\n${event}\nContext dump:\n${context}");
+        context.fail(`Authorization methods accepted: Bearer.\nEvent dump:\n${event}\nContext dump:\n${context}`);
         return undefined;
     }
 
@@ -33,7 +33,7 @@ const authoriser: Handler = async (event: any, context: Context): Promise<Policy
             new StatementBuilder()
                 .setAction("execute-api:Invoke")
                 .setEffect(Effect.Allow)
-                .setResourceRegion("eu-west-2")
+                .setResourceRegion("eu-west-1")
                 .setResourceAccountId("*")
                 .setResourceApiId("*")
                 .setResourceStageName("*")
@@ -43,18 +43,18 @@ const authoriser: Handler = async (event: any, context: Context): Promise<Policy
         ];
         const policyDocument: PolicyDocument = { Version: "2012-10-17", Statement: statements };
 
-        let policy = new Policy(token.sub, policyDocument, "some_key", { context: "test" });
-
-        return new Policy(token.sub, policyDocument, "some_key", { context: "test" });
+        return new Policy(token.sub, policyDocument);
     })
     .catch((error: StatusCodeError | AuthorizationError | JsonWebTokenError | NotBeforeError | TokenExpiredError) => {
         if (error instanceof StatusCodeError) {
             context.fail(`A ${error.statusCode} error has occured:\n${JSON.stringify(error.error)}`);
+            console.log(`A ${error.statusCode} error has occured:\n${JSON.stringify(error.error)}`);
             return undefined;
         }
 
         if (error instanceof AuthorizationError) {
             context.fail(error.message);
+            console.log(error.message);
             return undefined;
         }
 
@@ -63,16 +63,16 @@ const authoriser: Handler = async (event: any, context: Context): Promise<Policy
             .setAction("execute-api:Invoke")
             .setEffect(Effect.Deny)
             .setResourceRegion("eu-west-1")
-            .setResourceAccountId("acc_id")
-            .setResourceApiId("api_id")
-            .setResourceStageName("production")
+            .setResourceAccountId("*")
+            .setResourceApiId("*")
+            .setResourceStageName("*")
             .setResourceHttpVerb("*")
             .setResourcePathSpecifier("*")
             .build()
         ];
         const policyDocument: PolicyDocument = { Version: "2012-10-17", Statement: statements };
 
-        return new Policy("Unauthorised", policyDocument, "some_key");
+        return new Policy("Unauthorised", policyDocument);
     });
 
 };
