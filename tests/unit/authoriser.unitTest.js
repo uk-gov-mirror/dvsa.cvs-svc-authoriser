@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 describe('Lambda Authoriser', () => {
     describe('when authorisation header is not present', () => {
         const CONTEXT = {
-            isFailed: "false",
+            isFailed: false,
             failureReason: "",
             fail: function (failureString) {
                 this.isFailed = true;
@@ -19,14 +19,16 @@ describe('Lambda Authoriser', () => {
         };
 
         it('should fail', () => {
-            authoriser.handler(event, CONTEXT);
-            expect(CONTEXT.isFailed).to.equal(true);
+            return authoriser.handler(event, CONTEXT)
+                .then(() => {
+                    expect(CONTEXT.isFailed).to.equal(true);
+                });
         })
     });
 
     describe('when authorisation method is not BEARER', () => {
         const CONTEXT = {
-            isFailed: "false",
+            isFailed: false,
             failureReason: "",
             fail: function (failureString) {
                 this.isFailed = true;
@@ -41,8 +43,10 @@ describe('Lambda Authoriser', () => {
         };
 
         it('should fail', () => {
-            authoriser.handler(event, CONTEXT);
-            expect(CONTEXT.isFailed).to.equal(true);
+            return authoriser.handler(event, CONTEXT)
+                .then((response) => {
+                    expect(CONTEXT.isFailed).to.equal(true);
+                });
         })
     });
 });
