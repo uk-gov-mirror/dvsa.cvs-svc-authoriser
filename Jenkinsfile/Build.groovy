@@ -40,7 +40,7 @@ podTemplate(label: label, containers: [
             stage('Fetching Secrets') {
               withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'jenkins-iam', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                   sh "cd build && mkdir config && touch config/config.yml"
-                  sh "aws secretsmanager get-secret-value --secret-id ${SECRET_ID} --query SecretString --region=eu-west-1 | jq . --raw-output > build/config/config.xml"
+                  sh "aws secretsmanager get-secret-value --secret-id ${SECRET_ID} --query SecretString --region=eu-west-1 | jq . --raw-output > build/config/config.yml"
               }
             }
 
