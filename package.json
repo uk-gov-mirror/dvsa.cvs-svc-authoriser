@@ -4,11 +4,35 @@
   "description": "Lambda authoriser for validating a user's Azure AD JWT and generating an access policy.",
   "main": "handler.js",
   "scripts": {
-    "build": "node_modules/typescript/bin/tsc --rootDir ./src --outDir build --sourceMap false && npm run build:copy && npm run build:install",
+    "build": "node_modules/typescript/bin/tsc --rootDir ./ --outDir build --sourceMap false && npm run build:copy && npm run build:install",
     "build:copy": "cp package.json package-lock.json build && cd src && find ./**/*.yml | cpio -pdm ../build",
     "build:install": "cd build && npm install --production",
-    "test": "node_modules/.bin/mocha tests/**/*.unitTest.js",
-    "sonar-scanner": "echo 'TODO'"
+    "test": "npm run build && BRANCH=local node_modules/.bin/mocha build/tests/**/*.unitTest.js",
+    "prepush": "BRANCH=local npm test && npm run tslint",
+    "predeploy": "npm install && npm run prepush",
+    "security-checks": "git secrets --scan && git log -p | scanrepo",
+    "tslint": "tslint src/**/*.ts tests/**/*.ts",
+    "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
+    "coverage": "BRANCH=local nyc mocha tests/unit/*.unitTest.ts && nyc report --reporter=lcov"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +40,7 @@
     "jsonwebtoken": "^8.4.0",
     "node-yaml": "^3.1.1",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2"
+    "typemoq": "^2.1.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
@@ -24,6 +48,8 @@
     "@types/lodash.mapvalues": "^4.6.4",
     "@types/node": "^10.12.18",
     "@types/request-promise": "^4.1.42",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
     "chai": "^4.2.0",
     "gulp": "^4.0.0",
     "mocha": "^5.2.0",
@@ -35,6 +61,8 @@
     "swagger-jsdoc": "^3.2.6",
     "tslint": "^5.12.1",
     "typedoc": "^0.14.2",
-    "typescript": "^3.2.4"
+    "typescript": "^3.2.4",
+    "ts-node-register": "^1.0.0",
+    "nyc": "^13.3.0"
   }
 }

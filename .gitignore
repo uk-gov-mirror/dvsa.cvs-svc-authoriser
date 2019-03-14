@@ -32,3 +32,11 @@ build/**
 
 # Config file
 src/config/*.yml
+
+#coverage
+.nyc_output/**
+coverage/**
+
+#sonarqube
+.scannerwork/**
+report.json
