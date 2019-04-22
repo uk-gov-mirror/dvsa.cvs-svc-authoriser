@@ -19,7 +19,7 @@ class JWTService {
             throw new AuthorizationError("Azure configuration is not valid.");
         }
 
-        if(this.isAtLeastOneRoleValid(decodedToken)){
+        if(!this.isAtLeastOneRoleValid(decodedToken)){
             throw new AuthorizationError("Invalid roles");
         }
 
