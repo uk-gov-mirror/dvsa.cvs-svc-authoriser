@@ -19,8 +19,7 @@ class JWTService {
             throw new AuthorizationError("Azure configuration is not valid.");
         }
 
-        // Check if the role is correct
-        if (!decodedToken.payload.roles && !decodedToken.payload.roles.includes( "CVSFullAccess", "CVSPsvTester", "CVSHgvTester", "CVSAdrTester", "CVSTirTester" )) {
+        if(this.isAtLeastOneRoleValid(decodedToken)){
             throw new AuthorizationError("Invalid roles");
         }
 
@@ -33,6 +32,21 @@ class JWTService {
                 return JWT.verify(token, certificate, { audience: config.azure.appId, issuer, algorithms: ["RS256"] });
             });
     }
+
+    public isAtLeastOneRoleValid(decodedToken: any): boolean {
+        let isAtLeastOneRoleValid = false
+        const allowedRoles = ["CVSFullAccess", "CVSPsvTester", "CVSHgvTester", "CVSAdrTester", "CVSTirTester"]
+        const rolesOnToken = decodedToken.payload.roles
+        if(!rolesOnToken) {
+            return false
+        }
+        allowedRoles.forEach(allowedRole => {
+            if(rolesOnToken.includes(allowedRole))
+                isAtLeastOneRoleValid = true
+        })
+        return isAtLeastOneRoleValid
+    }
+
 
     /**
      * Fetch the public key
