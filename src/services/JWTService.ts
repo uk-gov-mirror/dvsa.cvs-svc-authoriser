@@ -3,7 +3,7 @@ import * as http from "request-promise";
 import {Configuration} from "../utils/Configuration";
 import {resolve} from "path";
 import AuthorizationError from "../models/exceptions/AuthorizationError";
-
+import {ALLOWEDROLES,ERRORMESSAGES} from "../assets/enum"
 class JWTService {
 
     /**
@@ -16,7 +16,7 @@ class JWTService {
 
         // Check if config is valid
         if (!config || !config.azure || !config.azure.tennant || !config.azure.appId || !config.azure.issuer || !config.azure.jwk_endpoint) {
-            throw new AuthorizationError("Azure configuration is not valid.");
+            throw new AuthorizationError(ERRORMESSAGES.AZURE_CONFIGURATION_NOT_VALID);
         }
 
         if(!this.isAtLeastOneRoleValid(decodedToken)){
@@ -35,7 +35,7 @@ class JWTService {
 
     public isAtLeastOneRoleValid(decodedToken: any): boolean {
         let isAtLeastOneRoleValid = false
-        const allowedRoles = ["CVSFullAccess", "CVSPsvTester", "CVSHgvTester", "CVSAdrTester", "CVSTirTester"]
+        const allowedRoles = [ALLOWEDROLES.CVSFullAccess, ALLOWEDROLES.CVSPsvTester, ALLOWEDROLES.CVSHgvTester, ALLOWEDROLES.CVSAdrTester, ALLOWEDROLES.CVSTirTester]
         const rolesOnToken = decodedToken.payload.roles
         if(!rolesOnToken) {
             return false
@@ -62,7 +62,7 @@ class JWTService {
             const publicKey: any = JWKs.keys.find((key: any) => key.kid === kid);
 
             if (!publicKey) {
-                throw new AuthorizationError("No matching public key found.");
+                throw new AuthorizationError(ERRORMESSAGES.NO_MATCHING_PUBLIC_KEY_FOUND);
             }
 
             return publicKey.x5c[0];
