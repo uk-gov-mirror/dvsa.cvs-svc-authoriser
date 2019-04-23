@@ -3,7 +3,7 @@ import * as http from "request-promise";
 import {Configuration} from "../utils/Configuration";
 import {resolve} from "path";
 import AuthorizationError from "../models/exceptions/AuthorizationError";
-import {ALLOWEDROLES,ERRORMESSAGES} from "../assets/enum"
+import {ALLOWEDROLES, ERRORMESSAGES} from "../assets/enum";
 class JWTService {
 
     /**
@@ -19,7 +19,7 @@ class JWTService {
             throw new AuthorizationError(ERRORMESSAGES.AZURE_CONFIGURATION_NOT_VALID);
         }
 
-        if(!this.isAtLeastOneRoleValid(decodedToken)){
+        if (!this.isAtLeastOneRoleValid(decodedToken)) {
             throw new AuthorizationError("Invalid roles");
         }
 
@@ -34,17 +34,18 @@ class JWTService {
     }
 
     public isAtLeastOneRoleValid(decodedToken: any): boolean {
-        let isAtLeastOneRoleValid = false
-        const allowedRoles = [ALLOWEDROLES.CVSFullAccess, ALLOWEDROLES.CVSPsvTester, ALLOWEDROLES.CVSHgvTester, ALLOWEDROLES.CVSAdrTester, ALLOWEDROLES.CVSTirTester]
-        const rolesOnToken = decodedToken.payload.roles
-        if(!rolesOnToken) {
-            return false
+        let isAtLeastOneRoleValid = false;
+        const allowedRoles = [ALLOWEDROLES.CVSFullAccess, ALLOWEDROLES.CVSPsvTester, ALLOWEDROLES.CVSHgvTester, ALLOWEDROLES.CVSAdrTester, ALLOWEDROLES.CVSTirTester];
+        const rolesOnToken = decodedToken.payload.roles;
+        if (!rolesOnToken) {
+            return false;
         }
-        allowedRoles.forEach(allowedRole => {
-            if(rolesOnToken.includes(allowedRole))
-                isAtLeastOneRoleValid = true
-        })
-        return isAtLeastOneRoleValid
+        allowedRoles.forEach((allowedRole) => {
+            if (rolesOnToken.includes(allowedRole)) {
+                isAtLeastOneRoleValid = true;
+            }
+        });
+        return isAtLeastOneRoleValid;
     }
 
 
