@@ -20,7 +20,7 @@ class JWTService {
         }
 
         // Check if the role is correct
-        if (!decodedToken.payload.roles && !decodedToken.payload.roles.includes( "CVSFullAccess", "CVSPsvTester", "CVSHgvTester", "CVSAdrTester", "CVSTirTester" )) {
+        if (!decodedToken.payload.roles && !decodedToken.payload.roles.includes("CVSFullAccess")) {
             throw new AuthorizationError("Invalid roles");
         }
 
