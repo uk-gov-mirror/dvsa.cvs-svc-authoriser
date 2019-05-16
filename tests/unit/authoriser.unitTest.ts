@@ -73,7 +73,7 @@ describe("Lambda Authoriser", () => {
         describe("and the token is not valid", () => {
             it("should fail", () => {
                 const mock = TypeMoq.Mock.ofType(JWTService);
-                mock.setup((m: any) => m.verify("this is an unouthorised token")).returns(() => Promise.resolve(1));
+                mock.setup((m: any) => m.verify("this is an unauthorised token")).returns(() => Promise.resolve(1));
                 return handler(event, CONTEXT)
                     .then((data: any) => {
                         expect(data.principalId).to.equal("Unauthorised");
@@ -102,7 +102,7 @@ describe("JWTService", () => {
         });
 
         describe("when one role is one of the allowed ones", () => {
-            it("should return false", () => {
+            it("should return true", () => {
                 const decodedToken: any = {
                         header: { alg: "HS256", typ: "JWT" },
                         payload: { oid: "1234567890",
@@ -117,7 +117,7 @@ describe("JWTService", () => {
         });
 
         describe("when two roles are ones of the allowed ones", () => {
-            it("should return false", () => {
+            it("should return true", () => {
                 const decodedToken: any = {
                         header: { alg: "HS256", typ: "JWT" },
                         payload: { oid: "1234567890",
@@ -132,7 +132,7 @@ describe("JWTService", () => {
         });
 
         describe("when one role is allowed and the another one is not", () => {
-            it("should return false", () => {
+            it("should return true", () => {
                 const decodedToken: any = {
                         header: { alg: "HS256", typ: "JWT" },
                         payload: { oid: "1234567890",

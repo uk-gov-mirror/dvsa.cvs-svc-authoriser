@@ -33,6 +33,10 @@ class JWTService {
             });
     }
 
+    /**
+     * Internal function used to determine if the user has a valid role. Not directly exposed
+     * @param decodedToken
+     */
     public isAtLeastOneRoleValid(decodedToken: any): boolean {
         let isAtLeastOneRoleValid = false;
         const allowedRoles = [ALLOWEDROLES.CVSFullAccess, ALLOWEDROLES.CVSPsvTester, ALLOWEDROLES.CVSHgvTester, ALLOWEDROLES.CVSAdrTester, ALLOWEDROLES.CVSTirTester];
