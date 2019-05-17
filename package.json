@@ -13,7 +13,8 @@
     "security-checks": "git secrets --scan && git log -p | scanrepo",
     "tslint": "tslint src/**/*.ts tests/**/*.ts",
     "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
-    "coverage": "BRANCH=local nyc mocha tests/unit/*.unitTest.ts && nyc report --reporter=lcov"
+    "coverage": "BRANCH=local nyc mocha tests/unit/*.unitTest.ts && nyc report --reporter=lcov",
+    "audit-dep": "npm audit --json | audit-filter --nsp-config=.nsprc --audit=-"
   },
   "nyc": {
     "include": [
@@ -51,6 +52,7 @@
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.14.6",
     "@types/request-promise": "^4.1.43",
+    "audit-filter": "^0.4.3",
     "chai": "^4.2.0",
     "gulp": "^4.0.2",
     "mocha": "^5.2.0",
