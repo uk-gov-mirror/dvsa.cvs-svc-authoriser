@@ -15,6 +15,8 @@ import AuthorizationError from "../models/exceptions/AuthorizationError";
  * @returns - Promise<Policy | undefined>
  */
 const authoriser: any = async (event: any, context: Context): Promise<Policy | undefined> => {
+
+    console.log('authoriser Context received as =>', context);
     if (!event.authorizationToken) {
         context.fail(`No authorization methods provided.\nEvent dump:\n${event}\nContext dump:\n${context}`);
         return undefined;

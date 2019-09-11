@@ -3,7 +3,8 @@ export enum ALLOWEDROLES {
     CVSPsvTester = "CVSPsvTester",
     CVSHgvTester = "CVSHgvTester",
     CVSAdrTester = "CVSAdrTester",
-    CVSTirTester = "CVSTirTester"
+    CVSTirTester = "CVSTirTester",
+    CVSVTMAdmin  = "VTMAdmin"
 }
 
 export enum ERRORMESSAGES {

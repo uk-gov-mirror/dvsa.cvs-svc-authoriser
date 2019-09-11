@@ -12,6 +12,7 @@ class JWTService {
      */
     public async verify(token: string): Promise<any> {
         const decodedToken: any = JWT.decode(token, { complete: true });
+        console.log('decoded token payload is => ', decodedToken );
         const config: any = Configuration.getInstance(resolve(`${__dirname}/../config/config.yml`)).getConfig();
 
         // Check if config is valid
@@ -20,6 +21,7 @@ class JWTService {
         }
 
         if (!this.isAtLeastOneRoleValid(decodedToken)) {
+            console.log('Invalid roles received from token => ',decodedToken.payload.roles);
             throw new AuthorizationError("Invalid roles");
         }
 
@@ -29,7 +31,8 @@ class JWTService {
                 const issuer = config.azure.issuer.replace(":tennant", config.azure.tennant);
                 const certificate = `-----BEGIN CERTIFICATE-----\n${x5c}\n-----END CERTIFICATE-----`;
 
-                return JWT.verify(token, certificate, { audience: config.azure.appId, issuer, algorithms: ["RS256"] });
+                return JWT.verify(token, certificate, { audience: decodedToken.payload.aud, issuer, algorithms: ["RS256"] });
+                // return JWT.verify(token, certificate, { audience: config.azure.appId, issuer, algorithms: ["RS256"] });
             });
     }
 
@@ -39,7 +42,7 @@ class JWTService {
      */
     public isAtLeastOneRoleValid(decodedToken: any): boolean {
         let isAtLeastOneRoleValid = false;
-        const allowedRoles = [ALLOWEDROLES.CVSFullAccess, ALLOWEDROLES.CVSPsvTester, ALLOWEDROLES.CVSHgvTester, ALLOWEDROLES.CVSAdrTester, ALLOWEDROLES.CVSTirTester];
+        const allowedRoles = [ALLOWEDROLES.CVSFullAccess, ALLOWEDROLES.CVSPsvTester, ALLOWEDROLES.CVSHgvTester, ALLOWEDROLES.CVSAdrTester, ALLOWEDROLES.CVSTirTester, ALLOWEDROLES.CVSVTMAdmin];
         const rolesOnToken = decodedToken.payload.roles;
         if (!rolesOnToken) {
             return false;
