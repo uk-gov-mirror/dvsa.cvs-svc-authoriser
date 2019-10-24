@@ -1,10 +1,7 @@
 import { JWTService } from "../../src/services/JWTService";
-import { expect } from "chai";
 import { handler } from "../../src/handler";
-import * as TypeMoq from "typemoq";
+import {StatusCodeError} from "request-promise/errors";
 import AuthorizationError from "../../src/models/exceptions/AuthorizationError";
-
-const jwtService = new JWTService();
 
 describe("Lambda Authoriser", () => {
     describe("when authorisation header is not present", () => {
@@ -26,7 +23,7 @@ describe("Lambda Authoriser", () => {
         it("should fail", () => {
             return handler(event, CONTEXT)
                 .then(() => {
-                    expect(CONTEXT.isFailed).to.equal(true);
+                    expect(CONTEXT.isFailed).toEqual(true);
                 });
         });
     });
@@ -50,7 +47,7 @@ describe("Lambda Authoriser", () => {
         it("should fail", () => {
             return handler(event, CONTEXT)
                 .then(() => {
-                    expect(CONTEXT.isFailed).to.equal(true);
+                    expect(CONTEXT.isFailed).toEqual(true);
                 });
         });
     });
@@ -70,79 +67,53 @@ describe("Lambda Authoriser", () => {
             authorizationToken: "Bearer",
             methodArn: "arn:aws:execute-api:eu-west-2:*:*/*/*/*"
         };
+        beforeEach(() => {
+            jest.resetModules();
+        });
         describe("and the token is not valid", () => {
-            it("should fail", () => {
-                const mock = TypeMoq.Mock.ofType(JWTService);
-                mock.setup((m: any) => m.verify("this is an unauthorised token")).returns(() => Promise.resolve(1));
+            it("should fail, returning `Unauthorised`", () => {
+                JWTService.prototype.verify  = jest.fn().mockRejectedValue("unauthorised");
+
                 return handler(event, CONTEXT)
                     .then((data: any) => {
-                        expect(data.principalId).to.equal("Unauthorised");
+                        expect(data.principalId).toEqual("Unauthorised");
                     });
             });
         });
-    });
-});
 
+        describe("and the JWT service throws a StatusCodeError", () => {
+            it("should fail, returning undefined", () => {
+                // @ts-ignore
+                const myError = new StatusCodeError(418, "Oh no! StatuscodeError!");
+                JWTService.prototype.verify  = jest.fn().mockRejectedValue(myError);
 
-describe("JWTService", () => {
-    describe("validateRole()", () => {
-        describe("when no role is one of the allowed ones", () => {
-            it("should return false", () => {
-                const decodedToken: any = {
-                        header: { alg: "HS256", typ: "JWT" },
-                        payload: { oid: "1234567890",
-                            name: "John Doe",
-                            upn: "test@email.com",
-                            roles: [ "invalidRole" ]
-                        },
-                        signature: "Jt0R3NSJHYCWj9zLkLfQo-ZYdPBYrT638_6Hjr0CAtk"
-                    };
-                expect(jwtService.isAtLeastOneRoleValid(decodedToken)).to.be.equal(false);
+                return handler(event, CONTEXT)
+                  .then((data: any) => {
+                      expect(data).toEqual(undefined);
+                  });
             });
         });
+        describe("and the JWT service throws an AuthorizationError", () => {
+            it("should fail, returning undefined", () => {
+                // @ts-ignore
+                const myError = new AuthorizationError(418, "Oh no! AuthorizationError!");
+                JWTService.prototype.verify  = jest.fn().mockRejectedValue(myError);
 
-        describe("when one role is one of the allowed ones", () => {
-            it("should return true", () => {
-                const decodedToken: any = {
-                        header: { alg: "HS256", typ: "JWT" },
-                        payload: { oid: "1234567890",
-                            name: "John Doe",
-                            upn: "test@email.com",
-                            roles: [ "CVSAdrTester" ]
-                        },
-                        signature: "Jt0R3NSJHYCWj9zLkLfQo-ZYdPBYrT638_6Hjr0CAtk"
-                    };
-                expect(jwtService.isAtLeastOneRoleValid(decodedToken)).to.be.equal(true);
+                return handler(event, CONTEXT)
+                  .then((data: any) => {
+                      expect(data).toEqual(undefined);
+                  });
             });
         });
+        describe("and the token is valid", () => {
+            it("should return an authorised policy", () => {
+                JWTService.prototype.verify  = jest.fn().mockResolvedValue({sub: "authorised"});
 
-        describe("when two roles are ones of the allowed ones", () => {
-            it("should return true", () => {
-                const decodedToken: any = {
-                        header: { alg: "HS256", typ: "JWT" },
-                        payload: { oid: "1234567890",
-                            name: "John Doe",
-                            upn: "test@email.com",
-                            roles: [ "CVSPsvTester", "CVSTirTester" ]
-                        },
-                        signature: "Jt0R3NSJHYCWj9zLkLfQo-ZYdPBYrT638_6Hjr0CAtk"
-                    };
-                expect(jwtService.isAtLeastOneRoleValid(decodedToken)).to.be.equal(true);
-            });
-        });
-
-        describe("when one role is allowed and the another one is not", () => {
-            it("should return true", () => {
-                const decodedToken: any = {
-                        header: { alg: "HS256", typ: "JWT" },
-                        payload: { oid: "1234567890",
-                            name: "John Doe",
-                            upn: "test@email.com",
-                            roles: [ "CVSPsvTester", "invalidRole" ]
-                        },
-                        signature: "Jt0R3NSJHYCWj9zLkLfQo-ZYdPBYrT638_6Hjr0CAtk"
-                    };
-                expect(jwtService.isAtLeastOneRoleValid(decodedToken)).to.be.equal(true);
+                return handler(event, CONTEXT)
+                    .then((data: any) => {
+                        expect(data.principalId).toEqual("authorised");
+                        expect(data.policyDocument.Statement[0].Effect).toEqual("Allow");
+                    });
             });
         });
     });

@@ -7,33 +7,14 @@
     "build": "node_modules/typescript/bin/tsc --rootDir ./ --outDir build --sourceMap false && npm run build:copy && npm run build:install",
     "build:copy": "cp package.json package-lock.json build && cd src && find ./**/*.yml | cpio -pdm ../build",
     "build:install": "cd build && npm install --production",
-    "test": "npm run build && BRANCH=local node_modules/.bin/mocha build/tests/**/*.unitTest.js",
+    "test": "BRANCH=local jest --testMatch=\"**/*.unitTest.ts\"",
     "prepush": "BRANCH=local npm test && npm run tslint",
     "predeploy": "npm install && npm run prepush",
     "security-checks": "git secrets --scan && git log -p | scanrepo",
     "tslint": "tslint src/**/*.ts tests/**/*.ts",
     "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
-    "coverage": "BRANCH=local nyc mocha tests/unit/*.unitTest.ts && nyc report --reporter=lcov",
+    "coverage": "BRANCH=local jest --testMatch=\"**/*.*Test.ts\" --runInBand --coverage",
     "audit-dep": "npm audit --json | audit-filter --nsp-config=.nsprc --audit=-"
-  },
-  "nyc": {
-    "include": [
-      "src/**/*.ts",
-      "src/**/*.tsx"
-    ],
-    "extension": [
-      ".ts",
-      ".tsx"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "reporter": [
-      "text-summary",
-      "html"
-    ],
-    "sourceMap": true,
-    "instrument": true
   },
   "author": "",
   "license": "ISC",
@@ -41,30 +22,48 @@
     "jsonwebtoken": "^8.5.1",
     "node-yaml": "^3.2.0",
     "request": "^2.88.0",
-    "request-promise": "^4.2.4",
-    "typemoq": "^2.1.0"
+    "request-promise": "^4.2.4"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.25",
-    "@types/chai": "^4.1.7",
-    "@types/jsonwebtoken": "^8.3.2",
+    "@types/aws-lambda": "^8.10.33",
+    "@types/jest": "^24.0.19",
+    "@types/jest-plugin-context": "^2.9.2",
+    "@types/jsonwebtoken": "^8.3.5",
     "@types/lodash.mapvalues": "^4.6.6",
-    "@types/mocha": "^5.2.5",
-    "@types/node": "^10.14.6",
-    "@types/request-promise": "^4.1.43",
-    "audit-filter": "^0.4.3",
-    "chai": "^4.2.0",
+    "@types/node": "^12.11.5",
+    "@types/request-promise": "^4.1.44",
+    "audit-filter": "^0.5.0",
     "gulp": "^4.0.2",
-    "mocha": "^5.2.0",
-    "nyc": "^14.1.1",
-    "serverless": "^1.42.3",
-    "serverless-dynamodb-local": "^0.2.37",
-    "serverless-offline": "^4.10.3",
-    "serverless-plugin-typescript": "^1.1.7",
-    "supertest": "^3.4.2",
-    "swagger-jsdoc": "^3.2.9",
+    "husky": "^3.0.8",
+    "jest": "^24.9.0",
+    "jest-plugin-context": "^2.9.0",
+    "jest-sonar-reporter": "^2.0.0",
+    "serverless": "^1.54.0",
+    "serverless-dynamodb-local": "^0.2.38",
+    "serverless-offline": "^5.12.0",
+    "serverless-plugin-typescript": "^1.1.9",
+    "supertest": "^4.0.2",
+    "swagger-jsdoc": "^3.4.0",
+    "ts-jest": "^24.1.0",
     "ts-node-register": "^1.0.0",
-    "tslint": "^5.16.0",
-    "typescript": "^3.4.5"
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.4"
+  },
+  "jestSonar": {
+    "reportPath": ".reports",
+    "reportFile": "test-report.xml",
+    "indent": 4
+  },
+  "jest": {
+    "coverageDirectory": "./coverage",
+    "collectCoverage": true,
+    "testResultsProcessor": "jest-sonar-reporter",
+    "testURL": "http://localhost"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run prepush",
+      "pre-push": "npm run prepush"
+    }
   }
 }

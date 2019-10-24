@@ -1,0 +1,5 @@
+azure:
+  tennant: ${BRANCH}
+  appId: 123abc
+  issuer: http://happyfuntimes.com/:tennant/
+  jwk_endpoint: https://happyfuntimes.com/:tennant/stuff
