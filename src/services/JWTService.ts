@@ -12,7 +12,6 @@ class JWTService {
      */
     public async verify(token: string): Promise<any> {
         const decodedToken: any = JWT.decode(token, { complete: true });
-        console.log("decoded token payload is => ", decodedToken );
         const config: any = Configuration.getInstance(resolve(`${__dirname}/../config/config.yml`)).getConfig();
 
         // Check if config is valid
@@ -21,7 +20,6 @@ class JWTService {
         }
 
         if (!this.isAtLeastOneRoleValid(decodedToken)) {
-            console.log("Invalid roles received from token => ", decodedToken.payload.roles);
             throw new AuthorizationError("Invalid roles");
         }
 
