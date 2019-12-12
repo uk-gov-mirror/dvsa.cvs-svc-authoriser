@@ -8,6 +8,7 @@
     "build:copy": "cp package.json package-lock.json build && cd src && find ./**/*.yml | cpio -pdm ../build",
     "build:install": "cd build && npm install --production",
     "test": "BRANCH=local jest --testMatch=\"**/*.unitTest.ts\" --coverage",
+    "package": "cd build && mkdir config && cd config && touch config.yml && cd ../ && cp -r package.json package-lock.json config src/ && cd src && npm ci --production && rm package.json package-lock.json && zip -qr ../../${ZIP_NAME}.zip",
     "test-i": "echo \"No Current Int Tests\"",
     "prepush": "BRANCH=local npm test && npm run tslint",
     "predeploy": "npm install && npm run prepush",
