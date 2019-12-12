@@ -12,6 +12,7 @@
     "test-i": "echo \"No Current Int Tests\"",
     "prepush": "BRANCH=local npm test && npm run tslint",
     "predeploy": "npm install && npm run prepush",
+    "package": "cd build && mkdir config && cd config && touch config.yml && cd ../ && cp -r package.json package-lock.json config src/ && cd src && npm ci --production && rm package.json package-lock.json && zip -qr ../../${ZIP_NAME}.zip .",
     "security-checks": "git secrets --scan && git log -p | scanrepo",
     "tslint": "tslint src/**/*.ts tests/**/*.ts",
     "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
