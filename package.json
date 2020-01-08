@@ -18,7 +18,8 @@
     "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
     "coverage": "BRANCH=local jest --testMatch=\"**/*.*Test.ts\" --runInBand --coverage",
     "audit-dep": "npm audit --json | audit-filter --nsp-config=.nsprc --audit=-",
-    "package": "cd build && cp -r package.json package-lock.json config src/ && cd src && npm ci --production && rm package.json package-lock.json && zip -qr ../../${ZIP_NAME}.zip ."
+    "package": "cd build && cp -r package.json package-lock.json config src/ && cd src && npm ci --production && rm package.json package-lock.json && zip -qr ../../${ZIP_NAME}.zip .",
+    "tools-setup": "echo 'Nothing to do'"
   },
   "author": "",
   "license": "ISC",
