@@ -1,4 +1,4 @@
 export enum Effect {
-    Allow = "Allow",
-    Deny = "Deny"
+  Allow = "Allow",
+  Deny = "Deny"
 }
