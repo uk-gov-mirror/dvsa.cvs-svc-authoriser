@@ -3,6 +3,14 @@ import {SecretsManager} from "aws-sdk";
 import {GetSecretValueRequest, GetSecretValueResponse} from "aws-sdk/clients/secretsmanager";
 import {safeLoad} from "js-yaml";
 
+export interface IConfig {
+  azure: {
+    tennant: string
+    appId: string
+    issuer: string
+    jwk_endpoint: string
+  };
+}
 
 export async function getConfig(): Promise<IConfig> {
   const sm = AWSXRay.captureAWSClient(new SecretsManager({region: process.env.AWS_REGION || "eu-west-1"}));
