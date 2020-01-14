@@ -6,16 +6,16 @@ import {Effect} from "../models/IAM/Effect";
 import {StatusCodeError} from "request-promise/errors";
 import {JsonWebTokenError, NotBeforeError, TokenExpiredError} from "jsonwebtoken";
 import AuthorizationError from "../models/exceptions/AuthorizationError";
-import {getConfig} from "../utils/getConfig";
+import {getConfig, IConfig} from "../utils/IConfig";
 
 /**
- * Lambda custom authorizer function to verify whether a JWT has been provided
+ * Lambda custom authoriser function to verify whether a JWT has been provided
  * and to verify its integrity and validity.
  * @param event - AWS Lambda event object
  * @param context - AWS Lambda Context object
  * @returns - Promise<Policy | undefined>
  */
-const authorizer: any = async (event: any, context: Context): Promise<Policy | undefined> => {
+const authoriser: any = async (event: any, context: Context): Promise<Policy | undefined> => {
 
   if (!event.authorizationToken) {
     context.fail(`No authorization methods provided.\nEvent dump:\n${event}\nContext dump:\n${context}`);
@@ -81,4 +81,4 @@ const authorizer: any = async (event: any, context: Context): Promise<Policy | u
 
 };
 
-export {authorizer};
+export {authoriser};

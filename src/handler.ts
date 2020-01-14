@@ -1,3 +1,3 @@
-import {authorizer} from "./functions/authorizer";
+import {authoriser} from "./functions/authoriser";
 
-export {authorizer as handler};
+export {authoriser as handler};
