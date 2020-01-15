@@ -6,7 +6,8 @@ import {Effect} from "../models/IAM/Effect";
 import {StatusCodeError} from "request-promise/errors";
 import {JsonWebTokenError, NotBeforeError, TokenExpiredError} from "jsonwebtoken";
 import AuthorizationError from "../models/exceptions/AuthorizationError";
-import {getConfig, IConfig} from "../utils/IConfig";
+import IConfig from "../utils/IConfig";
+import getConfig from "../utils/GetConfig";
 
 /**
  * Lambda custom authoriser function to verify whether a JWT has been provided

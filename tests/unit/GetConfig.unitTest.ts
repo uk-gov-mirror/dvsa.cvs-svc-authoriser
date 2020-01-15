@@ -1,6 +1,7 @@
 import {safeDump} from "js-yaml";
-import {getConfig, IConfig} from "../../src/utils/IConfig";
+import IConfig from "../../src/utils/IConfig";
 import SecretsManager from "aws-sdk/clients/secretsmanager";
+import getConfig from "../../src/utils/GetConfig";
 
 describe("getConfig", () => {
   const mockConf: IConfig = {

@@ -3,7 +3,7 @@ import {handler} from "../../src/handler";
 import {StatusCodeError} from "request-promise/errors";
 import AuthorizationError from "../../src/models/exceptions/AuthorizationError";
 
-jest.mock("../../src/utils/IConfig");
+jest.mock("../../src/utils/GetConfig");
 describe("Lambda Authoriser", () => {
   describe("when authorisation header is not present", () => {
     const CONTEXT = {
