@@ -104,8 +104,8 @@ class StatementBuilder {
    */
   public build(): Statement {
     return {
-      Action: <string> this.Action,
-      Effect: <string> this.Effect,
+      Action: this.Action as string,
+      Effect: this.Effect as string,
       Resource: this.Resource
     };
   }
