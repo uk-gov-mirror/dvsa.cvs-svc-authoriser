@@ -1,6 +1,7 @@
 import {JWTService} from "../../src/services/JWTService";
 import * as JWT from "jsonwebtoken";
 import AuthorizationError from "../../src/models/exceptions/AuthorizationError";
+import {IConfig} from "../../src/utils/IConfig";
 
 jest.mock("jsonwebtoken", () => {
   return {
