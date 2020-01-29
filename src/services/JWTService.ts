@@ -2,7 +2,7 @@ import * as JWT from "jsonwebtoken";
 import * as http from "request-promise";
 import AuthorizationError from "../models/exceptions/AuthorizationError";
 import {ALLOWEDROLES, ERRORMESSAGES} from "../assets/enum";
-import {IConfig} from "../utils/IConfig";
+import IConfig from "../utils/IConfig";
 
 class JWTService {
 
