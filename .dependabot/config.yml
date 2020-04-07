@@ -13,4 +13,6 @@ update_configs:
   - "MartiUK"
   allowed_updates:
   - match:
-      update_type: "security"
+    update_type: "security"
+  commit_message:
+    prefix: "[security-auto]"
