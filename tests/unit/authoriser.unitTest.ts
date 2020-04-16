@@ -3,6 +3,7 @@ import {handler} from "../../src/handler";
 import {StatusCodeError} from "request-promise/errors";
 import AuthorizationError from "../../src/models/exceptions/AuthorizationError";
 
+
 jest.mock("../../src/utils/GetConfig");
 describe("Lambda Authoriser", () => {
   describe("when authorisation header is not present", () => {
@@ -68,7 +69,11 @@ describe("Lambda Authoriser", () => {
       authorizationToken: "Bearer",
       methodArn: "arn:aws:execute-api:eu-west-2:*:*/*/*/*"
     };
+    
+    let expectedPolicyPrincipalId: string;
+
     beforeEach(() => {
+      expectedPolicyPrincipalId = 'Unauthorised'
       jest.resetModules();
     });
     describe("and the token is not valid", () => {
@@ -82,13 +87,15 @@ describe("Lambda Authoriser", () => {
     });
 
     describe("and the JWT service throws a StatusCodeError", () => {
+
       it("should fail, returning undefined", () => {
         // @ts-ignore
         const myError = new StatusCodeError(418, "Oh no! StatuscodeError!");
         JWTService.prototype.verify = jest.fn().mockRejectedValue(myError);
         return handler(event, CONTEXT)
           .then((data: any) => {
-            expect(data).toEqual(undefined);
+            expect(data).toHaveProperty('policyDocument')
+            expect(data).toHaveProperty('principalId', expectedPolicyPrincipalId)
           });
       });
     });
@@ -99,7 +106,8 @@ describe("Lambda Authoriser", () => {
         JWTService.prototype.verify = jest.fn().mockRejectedValue(myError);
         return handler(event, CONTEXT)
           .then((data: any) => {
-            expect(data).toEqual(undefined);
+            expect(data).toHaveProperty('policyDocument')
+            expect(data).toHaveProperty('principalId', expectedPolicyPrincipalId)
           });
       });
     });

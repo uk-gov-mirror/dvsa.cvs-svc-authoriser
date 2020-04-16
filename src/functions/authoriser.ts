@@ -54,13 +54,11 @@ const authoriser: any = async (event: any, context: Context): Promise<Policy | u
       if (error instanceof StatusCodeError) {
         context.fail(`A ${error.statusCode} error has occurred:\n${JSON.stringify(error.error)}`);
         console.log(`A ${error.statusCode} error has occurred:\n${JSON.stringify(error.error)}`);
-        return undefined;
       }
 
       if (error instanceof AuthorizationError) {
         context.fail(error.message);
         console.log(error.message);
-        return undefined;
       }
 
       const statements: Statement[] = [
