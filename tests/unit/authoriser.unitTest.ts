@@ -69,11 +69,11 @@ describe("Lambda Authoriser", () => {
       authorizationToken: "Bearer",
       methodArn: "arn:aws:execute-api:eu-west-2:*:*/*/*/*"
     };
-    
+
     let expectedPolicyPrincipalId: string;
 
     beforeEach(() => {
-      expectedPolicyPrincipalId = 'Unauthorised'
+      expectedPolicyPrincipalId = "Unauthorised";
       jest.resetModules();
     });
     describe("and the token is not valid", () => {
@@ -94,8 +94,8 @@ describe("Lambda Authoriser", () => {
         JWTService.prototype.verify = jest.fn().mockRejectedValue(myError);
         return handler(event, CONTEXT)
           .then((data: any) => {
-            expect(data).toHaveProperty('policyDocument')
-            expect(data).toHaveProperty('principalId', expectedPolicyPrincipalId)
+            expect(data).toHaveProperty("policyDocument");
+            expect(data).toHaveProperty("principalId", expectedPolicyPrincipalId);
           });
       });
     });
@@ -106,8 +106,8 @@ describe("Lambda Authoriser", () => {
         JWTService.prototype.verify = jest.fn().mockRejectedValue(myError);
         return handler(event, CONTEXT)
           .then((data: any) => {
-            expect(data).toHaveProperty('policyDocument')
-            expect(data).toHaveProperty('principalId', expectedPolicyPrincipalId)
+            expect(data).toHaveProperty("policyDocument");
+            expect(data).toHaveProperty("principalId", expectedPolicyPrincipalId);
           });
       });
     });
