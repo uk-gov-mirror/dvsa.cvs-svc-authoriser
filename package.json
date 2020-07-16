@@ -5,6 +5,7 @@
   "main": "handler.js",
   "scripts": {
     "build": "node_modules/typescript/bin/tsc --rootDir ./ --outDir build --sourceMap false && npm run build:copy && npm run build:install",
+    "build:pipeline": "echo 'Nothing to do'",
     "build:copy": "cp package.json package-lock.json build && cd src && find ./**/*.yml | cpio -pdm ../build",
     "build:install": "cd build && npm install --production",
     "test": "BRANCH=local jest --testMatch=\"**/*.unitTest.ts\" --coverage",
