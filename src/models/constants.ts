@@ -1,0 +1,10 @@
+import { ALLOWEDROLES } from "./enum";
+
+export const ALLOWED_CVS_ROLES = [
+  ALLOWEDROLES.CVSFullAccess,
+  ALLOWEDROLES.CVSPsvTester,
+  ALLOWEDROLES.CVSHgvTester,
+  ALLOWEDROLES.CVSAdrTester,
+  ALLOWEDROLES.CVSTirTester,
+  ALLOWEDROLES.CVSVTMAdmin
+];
