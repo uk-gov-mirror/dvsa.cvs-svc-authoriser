@@ -12,11 +12,11 @@
     "test-i": "echo \"No Current Int Tests\"",
     "prepush": "BRANCH=local npm test && npm run tslint",
     "predeploy": "npm install && npm run prepush",
-    "security-checks": "git secrets --scan && git log -p | scanrepo",
     "tslint": "tslint src/**/*.ts tests/**/*.ts",
-    "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
+    "sonar-scanner": "AWS_XRAY_CONTEXT_MISSING=LOG_ERROR npm run tslint && AWS_XRAY_CONTEXT_MISSING=LOG_ERROR npm run coverage && sonar-scanner",
     "coverage": "BRANCH=local jest --testMatch=\"**/*.*Test.ts\" --runInBand --coverage",
     "audit-dep": "npm audit --json | audit-filter --nsp-config=.nsprc --audit=-",
+    "security-checks": "npm audit --audit-level=critical && git secrets --register-aws && git secrets --scan && git log -p | scanrepo",
     "tools-setup": "echo 'Nothing to do'"
   },
   "author": "",
