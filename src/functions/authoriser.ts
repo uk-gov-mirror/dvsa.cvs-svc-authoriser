@@ -51,18 +51,13 @@ const authoriser: any = async (event: any, context: Context): Promise<Policy | u
       return new Policy(result.sub, policyDocument);
     })
     .catch((error: StatusCodeError | AuthorizationError | JsonWebTokenError | NotBeforeError | TokenExpiredError) => {
+      // Fail the lambda if we receive a StatusCodeError
       if (error instanceof StatusCodeError) {
-        context.fail(`A ${error.statusCode} error has occurred:\n${JSON.stringify(error.error)}`);
-        console.log(`A ${error.statusCode} error has occurred:\n${JSON.stringify(error.error)}`);
+        console.error(`A ${error.statusCode} error has occurred`);
+        console.error(JSON.stringify(error.error));
         return undefined;
       }
-
-      if (error instanceof AuthorizationError) {
-        context.fail(error.message);
-        console.log(error.message);
-        return undefined;
-      }
-
+      console.warn(error.message);
       const statements: Statement[] = [
         new StatementBuilder()
           .setAction("execute-api:Invoke")

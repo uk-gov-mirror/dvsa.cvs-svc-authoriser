@@ -93,13 +93,13 @@ describe("Lambda Authoriser", () => {
       });
     });
     describe("and the JWT service throws an AuthorizationError", () => {
-      it("should fail, returning undefined", () => {
+      it("should fail, returning `Unauthorised`", () => {
         // @ts-ignore
         const myError = new AuthorizationError(418, "Oh no! AuthorizationError!");
         JWTService.prototype.verify = jest.fn().mockRejectedValue(myError);
         return handler(event, CONTEXT)
           .then((data: any) => {
-            expect(data).toEqual(undefined);
+            expect(data.principalId).toEqual("Unauthorised");
           });
       });
     });
