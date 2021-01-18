@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Lambda authoriser for validating a user's Azure AD JWT and generating an access policy.",
   "main": "handler.js",
+  "engines": {
+    "node": "10.18.1"
+  },
   "scripts": {
     "build": "node_modules/typescript/bin/tsc --rootDir ./ --outDir build --sourceMap false && npm run build:copy && npm run build:install",
     "build:copy": "cp package.json package-lock.json build && cd src && find ./**/*.yml | cpio -pdm ../build",
@@ -16,7 +19,8 @@
     "tslint": "tslint src/**/*.ts tests/**/*.ts",
     "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
     "coverage": "BRANCH=local jest --testMatch=\"**/*.*Test.ts\" --runInBand --coverage",
-    "audit-dep": "npm audit --json | audit-filter --nsp-config=.nsprc --audit=-",
+    "audit:check": "npm audit --json | audit-filter --nsp-config=.nsprc --audit=-",
+    "audit-dep": "npm audit",
     "tools-setup": "echo 'Nothing to do'"
   },
   "author": "",
