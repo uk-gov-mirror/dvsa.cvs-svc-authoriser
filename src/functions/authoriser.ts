@@ -18,7 +18,7 @@ import getConfig from "../utils/GetConfig";
  */
 const authoriser: any = async (event: any, context: Context): Promise<Policy | undefined> => {
 
-  console.log('version 1')
+  console.log('version 2')
 
   if (!event.authorizationToken) {
     context.fail(`No authorization methods provided.\nEvent dump:\n${event}\nContext dump:\n${context}`);
