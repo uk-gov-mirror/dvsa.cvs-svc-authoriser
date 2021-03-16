@@ -1,0 +1,26 @@
+{
+  "header": {
+    "typ": "JWT",
+    "alg": "RS256",
+    "kid": "1LTMzakihiRla_8z2BEJVXeWMqo"
+  },
+  "payload": {
+    "ver": "2.0",
+    "iss": "https://login.microsoftonline.com/9122040d-6c67-4c5b-b112-36a304b66dad/v2.0",
+    "sub": "AAAAAAAAAAAAAAAAAAAAAIkzqFVrSaSaFHy782bbtaQ",
+    "aud": "6cb04018-a3f5-46a7-b995-940c78f5aef3",
+    "exp": 1536361411,
+    "iat": 1536274711,
+    "nbf": 1536274711,
+    "name": "Abe Lincoln",
+    "preferred_username": "AbeLi@microsoft.com",
+    "oid": "00000000-0000-0000-66f3-3332eca7ea81",
+    "tid": "9122040d-6c67-4c5b-b112-36a304b66dad",
+    "nonce": "123523",
+    "aio": "Df2UVXL1ix!lMCWMSOJBcFatzcGfvFGhjKv8q5g0x732dR5MB5BisvGQO7YWByjd8iQDLq!eGbIDakyp5mnOrcdqHeYSnltepQmRp6AIZ8jY",
+    "roles": [
+      "CVSFullAccess"
+    ]
+  },
+  "signature": "1AFWW-Ck5nROwSlltm7GzZvDwUkqvhSQpm55TQsmVo9Y59cLhRXpvB8n-55HCr9Z6G_31_UbeUkoz612I2j_Sm9FFShSDDjoaLQr54CreGIJvjtmS3EkK9a7SJBbcpL1MpUtlfygow39tFjY7EVNW9plWUvRrTgVk7lYLprvfzw-CIqw3gHC-T7IK_m_xkr08INERBtaecwhTeN4chPC4W3jdmw_lIxzC48YoQ0dB1L9-ImX98Egypfrlbm0IBL5spFzL6JDZIRRJOu8vecJvj1mq-IUhGt0MacxX8jdxYLP-KUu2d9MbNKpCKJuZ7p8gwTL5B7NlUdh_dmSviPWrw"
+}
