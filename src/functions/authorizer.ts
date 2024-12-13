@@ -36,9 +36,19 @@ export const authorizer = async (event: APIGatewayTokenAuthorizerEvent, context:
     const jwt = await getValidJwt(event.authorizationToken, logEvent, process.env.AZURE_TENANT_ID, process.env.AZURE_CLIENT_ID);
 
     envLogger(LogLevel.INFO, "Generating role policy");
-    const policy = generateRolePolicy(jwt, logEvent) ?? generateFunctionalPolicy(jwt, logEvent);
+    const rolePolicy = generateRolePolicy(jwt, logEvent);
+    const functionalPolicy = generateFunctionalPolicy(jwt, logEvent);
+    const activePolicy = (rolePolicy ?? functionalPolicy ?? {}) as APIGatewayAuthorizerResult;
 
-    if (policy !== undefined) {
+    const policy = {
+      ...activePolicy,
+      policyDocument: {
+        ...activePolicy?.policyDocument,
+        Statement: [...rolePolicy?.policyDocument?.Statement ?? [], ...functionalPolicy?.policyDocument?.Statement ?? []],
+      }
+    } as APIGatewayAuthorizerResult;
+
+    if (Object.keys(policy).length > 0 && policy.principalId && policy.policyDocument.Statement.length > 0) {
       envLogger(LogLevel.INFO, "Role policy generated");
       return policy;
     }
