@@ -87,7 +87,7 @@ describe("test writeLogMessage method", () => {
         authorizationToken: errorLogEvent.token,
       },
       logErrorEvent,
-      error
+      error,
     );
 
     expect(returnValue.token).toBeUndefined();
@@ -104,7 +104,7 @@ describe("test writeLogMessage method", () => {
         authorizationToken: errorLogEvent.token,
       },
       logErrorEvent,
-      error
+      error,
     );
 
     expect(returnValue.token).toEqual(errorLogEvent.token);

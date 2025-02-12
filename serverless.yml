@@ -4,7 +4,7 @@ plugins:
   - serverless-offline
   - serverless-plugin-typescript
   - serverless-dotenv-plugin
-  -
+
 provider:
   region: eu-west-1
   name: aws

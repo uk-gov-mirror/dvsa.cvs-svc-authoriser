@@ -9,6 +9,8 @@ import { ILogEvent } from "../models/ILogEvent";
 import { envLogger, LogLevel, writeLogMessage } from "../common/Logger";
 import newPolicyDocument from "./newPolicyDocument";
 import { Jwt, JwtPayload } from "jsonwebtoken";
+import { isVersionEndpointRequest } from "../services/method-arn-reader";
+import { generateVersionPolicy } from "./versionPolicyFactory";
 
 /**
  * Lambda custom authorizer function to verify whether a JWT has been provided
@@ -32,6 +34,12 @@ export const authorizer = async (event: APIGatewayTokenAuthorizerEvent, context:
   try {
     initialiseLogEvent(event);
 
+    // If the request is for to a /version endpoint, allow it through without checking the JWT
+    if (isVersionEndpointRequest(event.methodArn)) {
+      envLogger(LogLevel.INFO, "Version endpoint request");
+      return generateVersionPolicy();
+    }
+
     envLogger(LogLevel.INFO, "Getting valid JWT");
     const jwt = await getValidJwt(event.authorizationToken, logEvent, process.env.AZURE_TENANT_ID, process.env.AZURE_CLIENT_ID);
 
@@ -43,7 +51,7 @@ export const authorizer = async (event: APIGatewayTokenAuthorizerEvent, context:
       return policy;
     }
 
-    reportNoValidRoles(jwt, event, context, logEvent);
+    reportNoValidRoles(jwt, logEvent);
     writeLogMessage(event, logEvent, JWT_MESSAGE.INVALID_ROLES);
 
     return unauthorisedPolicy();
@@ -63,7 +71,7 @@ const unauthorisedPolicy = (): APIGatewayAuthorizerResult => {
   };
 };
 
-const reportNoValidRoles = (jwt: Jwt, event: APIGatewayTokenAuthorizerEvent, context: Context, logEvent: ILogEvent): void => {
+const reportNoValidRoles = (jwt: Jwt, logEvent: ILogEvent): void => {
   const roles = (jwt.payload as JwtPayload).roles;
   if (roles && roles.length === 0) {
     logEvent.message = JWT_MESSAGE.NO_ROLES;

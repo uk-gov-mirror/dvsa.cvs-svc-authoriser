@@ -90,7 +90,7 @@ describe("getValidJwt()", () => {
           exp: 631005334,
           preferred_username: "test_username",
         },
-        "testSignature"
+        "testSignature",
       );
 
       const logEvent: ILogEvent = {};
@@ -114,7 +114,7 @@ describe("getValidJwt()", () => {
           preferred_username: "test_username",
           unique_name: "test_unique_name",
         },
-        "testSignature"
+        "testSignature",
       );
 
       const logEvent: ILogEvent = {};
@@ -137,7 +137,7 @@ describe("getValidJwt()", () => {
           exp: 631005334,
           unique_name: "test_unique_name",
         },
-        "testSignature"
+        "testSignature",
       );
 
       const logEvent: ILogEvent = {};
