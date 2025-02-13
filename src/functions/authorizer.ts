@@ -9,7 +9,7 @@ import { ILogEvent } from "../models/ILogEvent";
 import { envLogger, LogLevel, writeLogMessage } from "../common/Logger";
 import newPolicyDocument from "./newPolicyDocument";
 import { Jwt, JwtPayload } from "jsonwebtoken";
-import { isVersionEndpointRequest } from "../services/method-arn-reader";
+import { isVersionEndpointRequest } from "../services/version-endpoint-request-checker";
 import { generateVersionPolicy } from "./versionPolicyFactory";
 
 /**
