@@ -15,7 +15,7 @@ export function generateVersionPolicy(): APIGatewayAuthorizerResult {
         .setEffect("Allow")
         .setHttpVerb(i.verb as HttpVerb)
         .setResource(i.path)
-        .build(),
+        .build()
     )
     .flat();
 

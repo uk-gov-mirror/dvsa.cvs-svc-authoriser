@@ -1,4 +1,4 @@
-import {envLogger, LogLevel} from "../common/Logger";
+import { envLogger, LogLevel } from "../common/Logger";
 
 export const isVersionEndpointRequest = (methodArn: string) => {
   // Extract path from methodArn

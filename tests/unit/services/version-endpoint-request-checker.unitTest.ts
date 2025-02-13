@@ -1,4 +1,4 @@
-import {isVersionEndpointRequest} from "../../../src/services/version-endpoint-request-checker";
+import { isVersionEndpointRequest } from "../../../src/services/version-endpoint-request-checker";
 
 describe("Version endpoint request checker", () => {
   test("should return true if the request is for a /version endpoint", () => {
