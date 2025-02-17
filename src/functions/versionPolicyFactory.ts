@@ -7,7 +7,9 @@ export function generateVersionPolicy(): APIGatewayAuthorizerResult {
   const statements: Statement[] = [
     {
       verb: "GET",
-      path: "version",
+      // Match any stage ending in /version with a wild-carded route preceding it
+      // e.g. /defects/version
+      path: "*/version"
     },
   ]
     .map((i) =>
