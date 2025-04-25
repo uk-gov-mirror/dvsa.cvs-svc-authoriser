@@ -4,8 +4,8 @@
   "description": "Lambda authoriser for validating a user's Azure AD JWT and generating an access policy.",
   "main": "handler.js",
   "engines": {
-    "node": "20.*",
-    "npm": "10.*"
+    "node": "22.14.*",
+    "npm": "10.9.*"
   },
   "scripts": {
     "start": "sls offline start",
@@ -27,7 +27,7 @@
   "author": "DVSA",
   "license": "ISC",
   "dependencies": {
-    "@dvsa/cvs-microservice-common": "^1.2.3",
+    "@dvsa/cvs-microservice-common": "^1.4.3",
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
@@ -37,14 +37,14 @@
     "@types/jest": "^29.5.12",
     "@types/jest-plugin-context": "2.9.7",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/node": "^20.16.4",
-    "esbuild": "0.23.1",
+    "@types/node": "^22.14.1",
+    "esbuild": "0.25.2",
     "husky": "^9.1.5",
     "jest": "^29.7.0",
     "jest-plugin-context": "2.9.0",
     "jest-sonar-reporter": "2.0.0",
+    "osls": "3.51.0",
     "prettier": "2.8.7",
-    "serverless": "^3.39.0",
     "serverless-dotenv-plugin": "6.0.0",
     "serverless-offline": "^13.8.0",
     "serverless-plugin-typescript": "^2.1.5",
