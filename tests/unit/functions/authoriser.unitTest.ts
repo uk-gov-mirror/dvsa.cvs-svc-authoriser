@@ -5,7 +5,7 @@ import { APIGatewayAuthorizerResult } from "aws-lambda/trigger/api-gateway-autho
 import { getLegacyRoles } from "../../../src/services/roles";
 import jwtJson from "../../resources/jwt.json";
 import { getValidJwt } from "../../../src/services/tokens";
-import {coreFunctionalConfig} from "../../../src/functions/functionalConfig";
+import { coreFunctionalConfig } from "../../../src/functions/functionalConfig";
 
 const event: APIGatewayTokenAuthorizerEvent = {
   type: "TOKEN",
@@ -108,7 +108,7 @@ describe("authorizer() unit tests", () => {
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
 
-    expect(returnValue.policyDocument.Statement.length).toEqual((coreFunctionalConfig.length * 2) + 6);
+    expect(returnValue.policyDocument.Statement.length).toEqual(coreFunctionalConfig.length * 2 + 6);
     expect(returnValue.policyDocument.Statement).toContainEqual({
       Effect: "Allow",
       Action: "execute-api:Invoke",
@@ -123,7 +123,7 @@ describe("authorizer() unit tests", () => {
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
-    expect(returnValue.policyDocument.Statement.length).toEqual((coreFunctionalConfig.length * 2) + 13);
+    expect(returnValue.policyDocument.Statement.length).toEqual(coreFunctionalConfig.length * 2 + 13);
   });
 
   it("should return an accurate policy based on functional roles", async () => {
@@ -132,7 +132,7 @@ describe("authorizer() unit tests", () => {
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
-    expect(returnValue.policyDocument.Statement.length).toEqual((coreFunctionalConfig.length * 2) + 13);
+    expect(returnValue.policyDocument.Statement.length).toEqual(coreFunctionalConfig.length * 2 + 13);
 
     const post: { Action: string; Effect: string; Resource: string } = returnValue.policyDocument.Statement[0] as unknown as { Action: string; Effect: string; Resource: string };
     expect(post.Effect).toEqual("Allow");
