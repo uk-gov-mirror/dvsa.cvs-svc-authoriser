@@ -8,7 +8,7 @@ export interface IApiAccess {
 export const coreFunctionalConfig: IApiAccess[] = [
   {
     verbs: ["GET", "OPTIONS"],
-    path: "minimum-version"
+    path: "minimum-version",
   },
   {
     verbs: ["GET", "OPTIONS"],
@@ -16,7 +16,7 @@ export const coreFunctionalConfig: IApiAccess[] = [
   },
   {
     verbs: ["POST", "OPTIONS"],
-    path: "log"
+    path: "log",
   },
 ];
 
