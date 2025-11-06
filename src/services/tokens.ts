@@ -8,8 +8,20 @@ interface CVSJWTPayload extends JwtPayload {
   preferred_username: string;
 }
 
-export const getValidJwt = async (authorizationToken: string, logEvent: ILogEvent, tenantId: string, clientId: string): Promise<Jwt> => {
-  checkFormat(authorizationToken);
+export const getValidJwt = async (authorizationToken: string | undefined, logEvent: ILogEvent, tenantId: string, clientId: string): Promise<Jwt> => {
+  if (!authorizationToken) {
+    throw new Error(JWT_MESSAGE.NO_AUTH_HEADER);
+  }
+
+  const [bearerPrefix, token] = authorizationToken.split(" ");
+
+  if ("Bearer" !== bearerPrefix) {
+    throw new Error(JWT_MESSAGE.NO_BEARER_PREFIX);
+  }
+
+  if (!token || !token.trim()) {
+    throw new Error(JWT_MESSAGE.BLANK_TOKEN);
+  }
 
   authorizationToken = authorizationToken.substring(7); // remove 'Bearer '
 
@@ -39,20 +51,4 @@ export const getValidJwt = async (authorizationToken: string, logEvent: ILogEven
   await checkSignature(authorizationToken, decoded, tenantId, clientId);
 
   return decoded;
-};
-
-const checkFormat = (authorizationToken: string) => {
-  if (!authorizationToken) {
-    throw new Error(JWT_MESSAGE.NO_AUTH_HEADER);
-  }
-
-  const [bearerPrefix, token] = authorizationToken.split(" ");
-
-  if ("Bearer" !== bearerPrefix) {
-    throw new Error(JWT_MESSAGE.NO_BEARER_PREFIX);
-  }
-
-  if (!token || !token.trim()) {
-    throw new Error(JWT_MESSAGE.BLANK_TOKEN);
-  }
 };

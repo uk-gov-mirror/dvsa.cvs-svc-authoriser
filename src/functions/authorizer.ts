@@ -1,29 +1,31 @@
-import { APIGatewayTokenAuthorizerEvent, Context, Statement } from "aws-lambda";
+import type { Context, Statement } from "aws-lambda";
 import StatementBuilder from "../services/StatementBuilder";
-import { APIGatewayAuthorizerResult } from "aws-lambda/trigger/api-gateway-authorizer";
+import type { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEventV2 } from "aws-lambda/trigger/api-gateway-authorizer";
 import { generatePolicy as generateRolePolicy } from "./rolePolicyFactory";
 import { generatePolicy as generateFunctionalPolicy } from "./functionalPolicyFactory";
 import { getValidJwt } from "../services/tokens";
 import { JWT_MESSAGE } from "../models/enums";
-import { ILogEvent } from "../models/ILogEvent";
+import type { ILogEvent } from "../models/ILogEvent";
 import { envLogger, LogLevel, writeLogMessage } from "../common/Logger";
 import newPolicyDocument from "./newPolicyDocument";
-import { Jwt, JwtPayload } from "jsonwebtoken";
+import type { Jwt, JwtPayload } from "jsonwebtoken";
 
 /**
  * Lambda custom authorizer function to verify whether a JWT has been provided
  * and to verify its integrity and validity.
  * @param event - AWS Lambda event object
- * @param context - AWS Lambda Context object
+ * @param _context
  * @returns - Promise<APIGatewayAuthorizerResult>
  */
-export const authorizer = async (event: APIGatewayTokenAuthorizerEvent, context: Context): Promise<APIGatewayAuthorizerResult> => {
+export const authorizer = async (event: APIGatewayRequestAuthorizerEventV2, _context: Context): Promise<APIGatewayAuthorizerResult> => {
   const logEvent: ILogEvent = {};
 
   envLogger(LogLevel.DEBUG, "Invoked authoriser");
 
+  const auth = event.headers?.Authorization;
+
   if (!process.env.AZURE_TENANT_ID || !process.env.AZURE_CLIENT_ID) {
-    writeLogMessage(event, logEvent, JWT_MESSAGE.INVALID_ID_SETUP);
+    writeLogMessage(auth, logEvent, JWT_MESSAGE.INVALID_ID_SETUP);
     return unauthorisedPolicy();
   }
 
@@ -33,7 +35,7 @@ export const authorizer = async (event: APIGatewayTokenAuthorizerEvent, context:
     initialiseLogEvent(event);
 
     envLogger(LogLevel.INFO, "Getting valid JWT");
-    const jwt = await getValidJwt(event.authorizationToken, logEvent, process.env.AZURE_TENANT_ID, process.env.AZURE_CLIENT_ID);
+    const jwt = await getValidJwt(auth, logEvent, process.env.AZURE_TENANT_ID, process.env.AZURE_CLIENT_ID);
 
     envLogger(LogLevel.INFO, "Generating role policy");
     const policy = generateRolePolicy(jwt, logEvent) ?? generateFunctionalPolicy(jwt, logEvent);
@@ -43,13 +45,13 @@ export const authorizer = async (event: APIGatewayTokenAuthorizerEvent, context:
       return policy;
     }
 
-    reportNoValidRoles(jwt, event, context, logEvent);
-    writeLogMessage(event, logEvent, JWT_MESSAGE.INVALID_ROLES);
+    reportNoValidRoles(jwt, logEvent);
+    writeLogMessage(auth, logEvent, JWT_MESSAGE.INVALID_ROLES);
 
     return unauthorisedPolicy();
   } catch (error: any) {
     envLogger(LogLevel.ERROR, "Catch - Error occurred", error);
-    writeLogMessage(event, logEvent, error);
+    writeLogMessage(auth, logEvent, error);
     return unauthorisedPolicy();
   }
 };
@@ -63,7 +65,7 @@ const unauthorisedPolicy = (): APIGatewayAuthorizerResult => {
   };
 };
 
-const reportNoValidRoles = (jwt: Jwt, event: APIGatewayTokenAuthorizerEvent, context: Context, logEvent: ILogEvent): void => {
+const reportNoValidRoles = (jwt: Jwt, logEvent: ILogEvent): void => {
   const roles = (jwt.payload as JwtPayload).roles;
   if (roles && roles.length === 0) {
     logEvent.message = JWT_MESSAGE.NO_ROLES;
@@ -76,11 +78,11 @@ const reportNoValidRoles = (jwt: Jwt, event: APIGatewayTokenAuthorizerEvent, con
  * This method is being used in order to clear the ILogEvent, ILogError objects and populate the request url and the time of request
  * @param event
  */
-const initialiseLogEvent = (event: APIGatewayTokenAuthorizerEvent): ILogEvent => {
+const initialiseLogEvent = (event: APIGatewayRequestAuthorizerEventV2): ILogEvent => {
   envLogger(LogLevel.DEBUG, "Init log event");
 
   return {
-    requestUrl: event.methodArn,
+    requestUrl: event.routeArn,
     timeOfRequest: new Date().toISOString(),
   } as ILogEvent;
 };

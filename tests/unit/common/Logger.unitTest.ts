@@ -9,7 +9,7 @@ import { APIGatewayTokenAuthorizerEvent } from "aws-lambda";
 describe("test writeLogMessage method", () => {
   const logError: ILogError = {};
   const logErrorEvent: ILogEvent = errorLogEvent;
-  const mockEvent = {} as APIGatewayTokenAuthorizerEvent;
+  const mockToken = '';
   logErrorEvent.roles = [{ name: "test", access: "read" }] as Role[];
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe("test writeLogMessage method", () => {
 
   context("when only the log event is passed in", () => {
     it("should return no errors", () => {
-      const returnValue: ILogEvent = writeLogMessage(mockEvent, successLogEvent, null);
+      const returnValue: ILogEvent = writeLogMessage(mockToken, successLogEvent, null);
 
       expect(returnValue.statusCode).toBe(200);
     });
@@ -31,7 +31,7 @@ describe("test writeLogMessage method", () => {
       console.log = jest.fn();
 
       logError.name = "TokenExpiredError";
-      const returnValue: ILogEvent = writeLogMessage(mockEvent, logErrorEvent, error);
+      const returnValue: ILogEvent = writeLogMessage(mockToken, logErrorEvent, error);
 
       expect(returnValue.error?.name).toBe("TokenExpiredError");
       expect(returnValue.error?.message).toBe("[JWT-ERROR-07] Error at undefined");
@@ -45,7 +45,7 @@ describe("test writeLogMessage method", () => {
     console.log = jest.fn();
 
     logError.name = "NotBeforeError";
-    const returnValue: ILogEvent = writeLogMessage(mockEvent, logErrorEvent, error);
+    const returnValue: ILogEvent = writeLogMessage(mockToken, logErrorEvent, error);
 
     expect(returnValue.error?.name).toBe("NotBeforeError");
     expect(returnValue.error?.message).toBe("[JWT-ERROR-08] undefined until undefined");
@@ -58,7 +58,7 @@ describe("test writeLogMessage method", () => {
     console.log = jest.fn();
 
     logError.name = "JsonWebTokenError";
-    const returnValue: ILogEvent = writeLogMessage(mockEvent, logErrorEvent, error);
+    const returnValue: ILogEvent = writeLogMessage(mockToken, logErrorEvent, error);
 
     expect(returnValue.error?.name).toBe("JsonWebTokenError");
     expect(returnValue.error?.message).toBe("[JWT-ERROR-09] test");
@@ -70,7 +70,7 @@ describe("test writeLogMessage method", () => {
     const error: ILogError = { name: "Error", message: "Error" };
     console.log = jest.fn();
 
-    const returnValue: ILogEvent = writeLogMessage(mockEvent, logErrorEvent, error);
+    const returnValue: ILogEvent = writeLogMessage(mockToken, logErrorEvent, error);
 
     expect(returnValue.error?.name).toBe("Error");
     expect(returnValue.error?.message).toBe("Error");
@@ -82,10 +82,7 @@ describe("test writeLogMessage method", () => {
     const error: ILogError = { name: "Error", message: "Error" };
 
     const returnValue: ILogEvent = writeLogMessage(
-      {
-        ...mockEvent,
-        authorizationToken: errorLogEvent.token,
-      },
+      errorLogEvent.token,
       logErrorEvent,
       error
     );
@@ -99,10 +96,7 @@ describe("test writeLogMessage method", () => {
     const error: ILogError = { name: "Error", message: "Error" };
 
     const returnValue: ILogEvent = writeLogMessage(
-      {
-        ...mockEvent,
-        authorizationToken: errorLogEvent.token,
-      },
+      errorLogEvent.token,
       logErrorEvent,
       error
     );
