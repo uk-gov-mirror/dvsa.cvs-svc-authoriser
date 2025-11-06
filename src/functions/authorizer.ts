@@ -1,6 +1,6 @@
 import type { Context, Statement } from "aws-lambda";
 import StatementBuilder from "../services/StatementBuilder";
-import {APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from "aws-lambda/trigger/api-gateway-authorizer";
+import { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from "aws-lambda/trigger/api-gateway-authorizer";
 import { generatePolicy as generateRolePolicy } from "./rolePolicyFactory";
 import { generatePolicy as generateFunctionalPolicy } from "./functionalPolicyFactory";
 import { getValidJwt } from "../services/tokens";
