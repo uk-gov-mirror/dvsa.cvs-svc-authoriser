@@ -1,6 +1,6 @@
 import type { Context, Statement } from "aws-lambda";
 import StatementBuilder from "../services/StatementBuilder";
-import type { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEventV2 } from "aws-lambda/trigger/api-gateway-authorizer";
+import {APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from "aws-lambda/trigger/api-gateway-authorizer";
 import { generatePolicy as generateRolePolicy } from "./rolePolicyFactory";
 import { generatePolicy as generateFunctionalPolicy } from "./functionalPolicyFactory";
 import { getValidJwt } from "../services/tokens";
@@ -17,7 +17,7 @@ import type { Jwt, JwtPayload } from "jsonwebtoken";
  * @param _context
  * @returns - Promise<APIGatewayAuthorizerResult>
  */
-export const authorizer = async (event: APIGatewayRequestAuthorizerEventV2, _context: Context): Promise<APIGatewayAuthorizerResult> => {
+export const authorizer = async (event: APIGatewayRequestAuthorizerEvent, _context: Context): Promise<APIGatewayAuthorizerResult> => {
   const logEvent: ILogEvent = {};
 
   envLogger(LogLevel.DEBUG, "Invoked authoriser");
@@ -78,11 +78,11 @@ const reportNoValidRoles = (jwt: Jwt, logEvent: ILogEvent): void => {
  * This method is being used in order to clear the ILogEvent, ILogError objects and populate the request url and the time of request
  * @param event
  */
-const initialiseLogEvent = (event: APIGatewayRequestAuthorizerEventV2): ILogEvent => {
+const initialiseLogEvent = (event: APIGatewayRequestAuthorizerEvent): ILogEvent => {
   envLogger(LogLevel.DEBUG, "Init log event");
 
   return {
-    requestUrl: event.routeArn,
+    requestUrl: event.methodArn,
     timeOfRequest: new Date().toISOString(),
   } as ILogEvent;
 };

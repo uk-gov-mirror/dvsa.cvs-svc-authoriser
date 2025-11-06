@@ -1,7 +1,7 @@
 import { Context } from "aws-lambda";
 import { authorizer } from "../../../src/functions/authorizer";
 import { IncomingMessage } from "http";
-import { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEventHeaders, APIGatewayRequestAuthorizerEventV2 } from "aws-lambda/trigger/api-gateway-authorizer";
+import {APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent, APIGatewayRequestAuthorizerEventHeaders} from "aws-lambda/trigger/api-gateway-authorizer";
 import { getLegacyRoles } from "../../../src/services/roles";
 import jwtJson from "../../resources/jwt.json";
 import { getValidJwt } from "../../../src/services/tokens";
@@ -9,11 +9,11 @@ import { coreFunctionalConfig } from "../../../src/functions/functionalConfig";
 
 const event = {
   type: "REQUEST",
-  routeArn: "arn:aws:execute-api:eu-west-1:*:*/*/*",
+  methodArn: "arn:aws:execute-api:eu-west-1:*:*/*/*",
   headers: {
     Authorization: "Bearer myBearerToken",
   } as APIGatewayRequestAuthorizerEventHeaders,
-} as APIGatewayRequestAuthorizerEventV2;
+} as APIGatewayRequestAuthorizerEvent;
 
 describe("authorizer() unit tests", () => {
   beforeEach(() => {
@@ -163,7 +163,7 @@ describe("authorizer() unit tests", () => {
   });
 });
 
-const expectUnauthorised = async (e: APIGatewayRequestAuthorizerEventV2) => {
+const expectUnauthorised = async (e: APIGatewayRequestAuthorizerEvent) => {
   await expect(authorizer(e, exampleContext())).resolves.toMatchObject({
     principalId: "Unauthorised",
   });
