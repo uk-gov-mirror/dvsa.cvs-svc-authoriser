@@ -11,7 +11,7 @@ const event = {
   type: "REQUEST",
   routeArn: "arn:aws:execute-api:eu-west-1:*:*/*/*",
   headers: {
-    Authorization: 'Bearer myBearerToken',
+    Authorization: "Bearer myBearerToken",
   } as APIGatewayRequestAuthorizerEventHeaders,
 } as APIGatewayRequestAuthorizerEventV2;
 

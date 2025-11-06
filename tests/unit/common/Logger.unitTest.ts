@@ -9,7 +9,7 @@ import { APIGatewayTokenAuthorizerEvent } from "aws-lambda";
 describe("test writeLogMessage method", () => {
   const logError: ILogError = {};
   const logErrorEvent: ILogEvent = errorLogEvent;
-  const mockToken = '';
+  const mockToken = "";
   logErrorEvent.roles = [{ name: "test", access: "read" }] as Role[];
 
   beforeEach(() => {
@@ -81,11 +81,7 @@ describe("test writeLogMessage method", () => {
   it("should not log the authorizationToken when DEBUG_MODE is not set to true", () => {
     const error: ILogError = { name: "Error", message: "Error" };
 
-    const returnValue: ILogEvent = writeLogMessage(
-      errorLogEvent.token,
-      logErrorEvent,
-      error
-    );
+    const returnValue: ILogEvent = writeLogMessage(errorLogEvent.token, logErrorEvent, error);
 
     expect(returnValue.token).toBeUndefined();
   });
@@ -95,11 +91,7 @@ describe("test writeLogMessage method", () => {
 
     const error: ILogError = { name: "Error", message: "Error" };
 
-    const returnValue: ILogEvent = writeLogMessage(
-      errorLogEvent.token,
-      logErrorEvent,
-      error
-    );
+    const returnValue: ILogEvent = writeLogMessage(errorLogEvent.token, logErrorEvent, error);
 
     expect(returnValue.token).toEqual(errorLogEvent.token);
   });
