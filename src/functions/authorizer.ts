@@ -9,8 +9,8 @@ import type { ILogEvent } from "../models/ILogEvent";
 import { envLogger, LogLevel, writeLogMessage } from "../common/Logger";
 import newPolicyDocument from "./newPolicyDocument";
 import type { Jwt, JwtPayload } from "jsonwebtoken";
-import {generateVersionPolicy} from "./versionPolicyFactory";
-import {isVersionEndpointRequest} from "../services/version-endpoint-request-checker";
+import { generateVersionPolicy } from "./versionPolicyFactory";
+import { isVersionEndpointRequest } from "../services/version-endpoint-request-checker";
 
 /**
  * Lambda custom authorizer function to verify whether a JWT has been provided
