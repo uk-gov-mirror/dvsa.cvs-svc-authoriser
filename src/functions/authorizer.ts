@@ -9,6 +9,8 @@ import type { ILogEvent } from "../models/ILogEvent";
 import { envLogger, LogLevel, writeLogMessage } from "../common/Logger";
 import newPolicyDocument from "./newPolicyDocument";
 import type { Jwt, JwtPayload } from "jsonwebtoken";
+import {generateVersionPolicy} from "./versionPolicyFactory";
+import {isVersionEndpointRequest} from "../services/version-endpoint-request-checker";
 
 /**
  * Lambda custom authorizer function to verify whether a JWT has been provided
@@ -34,11 +36,17 @@ export const authorizer = async (event: APIGatewayRequestAuthorizerEvent, _conte
   try {
     initialiseLogEvent(event);
 
+    // If the request is for to a /version endpoint, allow it through without checking the JWT
+    if (isVersionEndpointRequest(event.methodArn)) {
+      envLogger(LogLevel.INFO, "Version endpoint request");
+      return generateVersionPolicy();
+    }
+
     envLogger(LogLevel.INFO, "Getting valid JWT");
     const jwt = await getValidJwt(auth, logEvent, process.env.AZURE_TENANT_ID, process.env.AZURE_CLIENT_ID);
 
     envLogger(LogLevel.INFO, "Generating role policy");
-    const policy = generateRolePolicy(jwt, logEvent) ?? generateFunctionalPolicy(jwt, logEvent);
+    const policy = generateRolePolicy(jwt, logEvent) ?? generateFunctionalPolicy(jwt);
 
     if (policy !== undefined) {
       envLogger(LogLevel.INFO, "Role policy generated");
