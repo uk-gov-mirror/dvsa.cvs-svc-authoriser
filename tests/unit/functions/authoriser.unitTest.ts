@@ -32,11 +32,27 @@ describe("authorizer() unit tests", () => {
     await expectUnauthorised(event);
   });
 
-  it("should return valid read-only statements on valid JWT", async () => {
+  it("should return valid read-only statements on valid JWT & attach JWT context", async () => {
     const jwtJsonClone = JSON.parse(JSON.stringify(jwtJson));
     jwtJsonClone.payload.roles = ["CVSFullAccess.read"];
     (getValidJwt as jest.Mock) = jest.fn().mockReturnValue(jwtJsonClone);
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
+    expect(returnValue.context).toEqual({
+      ver: '2.0',
+      iss: 'https://login.microsoftonline.com/9122040d-6c67-4c5b-b112-36a304b66dad/v2.0',
+      sub: 'AAAAAAAAAAAAAAAAAAAAAIkzqFVrSaSaFHy782bbtaQ',
+      aud: '6cb04018-a3f5-46a7-b995-940c78f5aef3',
+      exp: 1536361411,
+      iat: 1536274711,
+      nbf: 1536274711,
+      name: 'Abe Lincoln',
+      preferred_username: 'AbeLi@microsoft.com',
+      oid: '00000000-0000-0000-66f3-3332eca7ea81',
+      tid: '9122040d-6c67-4c5b-b112-36a304b66dad',
+      nonce: '123523',
+      aio: 'Df2UVXL1ix!lMCWMSOJBcFatzcGfvFGhjKv8q5g0x732dR5MB5BisvGQO7YWByjd8iQDLq!eGbIDakyp5mnOrcdqHeYSnltepQmRp6AIZ8jY',
+      roles: [ 'CVSFullAccess.read' ]
+    });
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
     expect(returnValue.policyDocument.Statement.length).toEqual(2);
     expect(returnValue.policyDocument.Statement).toContainEqual({
