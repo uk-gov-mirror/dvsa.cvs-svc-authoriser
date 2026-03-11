@@ -37,6 +37,11 @@ describe("authorizer() unit tests", () => {
     jwtJsonClone.payload.roles = ["CVSFullAccess.read"];
     (getValidJwt as jest.Mock) = jest.fn().mockReturnValue(jwtJsonClone);
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
+    expect(returnValue.context).toEqual({
+      email: jwtJsonClone.payload.preferred_username,
+      msOid: jwtJsonClone.payload.oid,
+      username: jwtJsonClone.payload.name,
+    });
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
     expect(returnValue.policyDocument.Statement.length).toEqual(2);
     expect(returnValue.policyDocument.Statement).toContainEqual({
@@ -58,8 +63,12 @@ describe("authorizer() unit tests", () => {
 
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
+    expect(returnValue.context).toEqual({
+      email: jwtJsonClone.payload.preferred_username,
+      msOid: jwtJsonClone.payload.oid,
+      username: jwtJsonClone.payload.name,
+    });
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
-
     expect(returnValue.policyDocument.Statement.length).toEqual(1);
     expect(returnValue.policyDocument.Statement).toContainEqual({
       Effect: "Allow",
@@ -75,8 +84,12 @@ describe("authorizer() unit tests", () => {
 
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
+    expect(returnValue.context).toEqual({
+      email: jwtJsonClone.payload.preferred_username,
+      msOid: jwtJsonClone.payload.oid,
+      username: jwtJsonClone.payload.name,
+    });
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
-
     expect(returnValue.policyDocument.Statement.length).toEqual(4);
     expect(returnValue.policyDocument.Statement).toContainEqual({
       Effect: "Allow",
@@ -100,14 +113,25 @@ describe("authorizer() unit tests", () => {
     });
   });
 
-  it("should return valid view statement on valid JWT", async () => {
+  it("should return valid view statement on valid JWT with employeeId", async () => {
     (getLegacyRoles as jest.Mock) = jest.fn().mockReturnValue([]);
     jwtJson.payload.roles = ["TechRecord.View"];
 
+    (jwtJson.payload as typeof jwtJson.payload & { employeeId: string }) = {
+      ...jwtJson.payload,
+      employeeId: "1234567",
+    };
+
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
+    expect(returnValue.context).toEqual({
+      email: jwtJson.payload.preferred_username,
+      msOid: jwtJson.payload.oid,
+      // @ts-ignore
+      employeeId: jwtJson.payload.employeeId,
+      username: jwtJson.payload.name,
+    });
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
-
     expect(returnValue.policyDocument.Statement.length).toEqual(coreFunctionalConfig.length * 2 + 6);
     expect(returnValue.policyDocument.Statement).toContainEqual({
       Effect: "Allow",

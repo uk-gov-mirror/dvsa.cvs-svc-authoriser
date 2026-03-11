@@ -40,6 +40,16 @@ export const authorizer = async (event: APIGatewayTokenAuthorizerEvent, context:
 
     if (policy !== undefined) {
       envLogger(LogLevel.INFO, "Role policy generated");
+
+      const payload = jwt.payload as JwtPayload;
+
+      policy.context = {
+        username: payload.name,
+        msOid: payload.oid,
+        employeeId: payload.employeeid ?? payload.employeeId,
+        email: payload.email ?? payload.preferred_username ?? payload.upn,
+      };
+
       return policy;
     }
 
