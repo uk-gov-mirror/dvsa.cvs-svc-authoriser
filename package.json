@@ -27,7 +27,7 @@
   "author": "DVSA",
   "license": "ISC",
   "dependencies": {
-    "@dvsa/cvs-microservice-common": "^1.4.3",
+    "@dvsa/cvs-microservice-common": "^1.5.1",
     "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
