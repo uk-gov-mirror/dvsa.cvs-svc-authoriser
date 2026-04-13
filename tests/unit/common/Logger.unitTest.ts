@@ -17,7 +17,7 @@ describe("test writeLogMessage method", () => {
     process.env.DEBUG_MODE = undefined;
   });
 
-  context("when only the log event is passed in", () => {
+  describe("when only the log event is passed in", () => {
     it("should return no errors", () => {
       const returnValue: ILogEvent = writeLogMessage(mockEvent, successLogEvent, null);
 
@@ -25,7 +25,7 @@ describe("test writeLogMessage method", () => {
     });
   });
 
-  context("when log event and error are passed in", () => {
+  describe("when log event and error are passed in", () => {
     it("should log TokenExpiredError", () => {
       const error: ILogError = { name: "TokenExpiredError", message: "Error" };
       console.log = jest.fn();
@@ -87,7 +87,7 @@ describe("test writeLogMessage method", () => {
         authorizationToken: errorLogEvent.token,
       },
       logErrorEvent,
-      error
+      error,
     );
 
     expect(returnValue.token).toBeUndefined();
@@ -104,7 +104,7 @@ describe("test writeLogMessage method", () => {
         authorizationToken: errorLogEvent.token,
       },
       logErrorEvent,
-      error
+      error,
     );
 
     expect(returnValue.token).toEqual(errorLogEvent.token);

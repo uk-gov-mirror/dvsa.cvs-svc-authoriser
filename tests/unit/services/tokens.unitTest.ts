@@ -78,7 +78,7 @@ describe("getValidJwt()", () => {
     });
   });
 
-  context("when preferred_username is present in the token", () => {
+  describe("when preferred_username is present in the token", () => {
     it("should set the email in the log event to preferred_username", async () => {
       const jwt = require("jsonwebtoken");
       const token = jwt.sign(
@@ -90,7 +90,7 @@ describe("getValidJwt()", () => {
           exp: 631005334,
           preferred_username: "test_username",
         },
-        "testSignature"
+        "testSignature",
       );
 
       const logEvent: ILogEvent = {};
@@ -101,7 +101,7 @@ describe("getValidJwt()", () => {
     });
   });
 
-  context("when preferred_username and unique_name are present in the token", () => {
+  describe("when preferred_username and unique_name are present in the token", () => {
     it("should set the email in the log event to preferred_username", async () => {
       const jwt = require("jsonwebtoken");
       const token = jwt.sign(
@@ -114,7 +114,7 @@ describe("getValidJwt()", () => {
           preferred_username: "test_username",
           unique_name: "test_unique_name",
         },
-        "testSignature"
+        "testSignature",
       );
 
       const logEvent: ILogEvent = {};
@@ -125,7 +125,7 @@ describe("getValidJwt()", () => {
     });
   });
 
-  context("when unique_name is present in the token without preferred_username", () => {
+  describe("when unique_name is present in the token without preferred_username", () => {
     it("should set the email in the log event to unique_name", async () => {
       const jwt = require("jsonwebtoken");
       const token = jwt.sign(
@@ -137,7 +137,7 @@ describe("getValidJwt()", () => {
           exp: 631005334,
           unique_name: "test_unique_name",
         },
-        "testSignature"
+        "testSignature",
       );
 
       const logEvent: ILogEvent = {};
