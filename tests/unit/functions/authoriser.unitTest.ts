@@ -1,41 +1,16 @@
-import { APIGatewayIAMAuthorizerResult, APIGatewayRequestAuthorizerEventV2, Context } from "aws-lambda";
+import { APIGatewayTokenAuthorizerEvent, Context } from "aws-lambda";
 import { authorizer } from "../../../src/functions/authorizer";
 import { IncomingMessage } from "http";
+import { APIGatewayAuthorizerResult } from "aws-lambda/trigger/api-gateway-authorizer";
 import { getLegacyRoles } from "../../../src/services/roles";
 import jwtJson from "../../resources/jwt.json";
 import { getValidJwt } from "../../../src/services/tokens";
 import { coreFunctionalConfig } from "../../../src/functions/functionalConfig";
 
-const event: APIGatewayRequestAuthorizerEventV2 = {
-  version: "2.0",
-  type: "REQUEST",
-  routeArn: "arn:aws:execute-api:eu-west-1:*:*/*/*/*",
-  identitySource: ["Bearer myBearerToken"],
-  routeKey: "POST /testFunction",
-  rawPath: "/testFunction",
-  rawQueryString: "",
-  cookies: [],
-  headers: {
-    authorization: "Bearer myBearerToken",
-  },
-  requestContext: {
-    accountId: "*",
-    apiId: "*",
-    domainName: "example.execute-api.eu-west-1.amazonaws.com",
-    domainPrefix: "example",
-    http: {
-      method: "POST",
-      path: "/testFunction",
-      protocol: "HTTP/1.1",
-      sourceIp: "127.0.0.1",
-      userAgent: "jest",
-    },
-    requestId: "TEST-REQUEST-ID",
-    routeKey: "POST /testFunction",
-    stage: "*",
-    time: "01/Jan/1970:00:00:00 +0000",
-    timeEpoch: 0,
-  },
+const event: APIGatewayTokenAuthorizerEvent = {
+  type: "TOKEN",
+  authorizationToken: "Bearer myBearerToken",
+  methodArn: "arn:aws:execute-api:eu-west-1:*:*/*/*/*",
 };
 
 describe("authorizer() unit tests", () => {
@@ -57,23 +32,11 @@ describe("authorizer() unit tests", () => {
     await expectUnauthorised(event);
   });
 
-  it("should validate the JWT from the authorization header", async () => {
-    await authorizer(event, exampleContext());
-
-    expect(getValidJwt).toHaveBeenCalledWith("Bearer myBearerToken", expect.any(Object), "tenant", "client");
-  });
-
-  it("should validate the JWT from identitySource when the authorization header is not present", async () => {
-    await authorizer({ ...event, headers: undefined }, exampleContext());
-
-    expect(getValidJwt).toHaveBeenCalledWith("Bearer myBearerToken", expect.any(Object), "tenant", "client");
-  });
-
   it("should return valid read-only statements on valid JWT", async () => {
     const jwtJsonClone = JSON.parse(JSON.stringify(jwtJson));
     jwtJsonClone.payload.roles = ["CVSFullAccess.read"];
     (getValidJwt as jest.Mock) = jest.fn().mockReturnValue(jwtJsonClone);
-    const returnValue: APIGatewayIAMAuthorizerResult = await authorizer(event, exampleContext());
+    const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
     expect(returnValue.context).toEqual({
       email: jwtJsonClone.payload.preferred_username,
       msOid: jwtJsonClone.payload.oid,
@@ -98,7 +61,7 @@ describe("authorizer() unit tests", () => {
     jwtJsonClone.payload.roles = ["CVSFullAccess.write"];
     (getValidJwt as jest.Mock) = jest.fn().mockReturnValue(jwtJsonClone);
 
-    const returnValue: APIGatewayIAMAuthorizerResult = await authorizer(event, exampleContext());
+    const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.context).toEqual({
       email: jwtJsonClone.payload.preferred_username,
@@ -119,7 +82,7 @@ describe("authorizer() unit tests", () => {
     jwtJsonClone.payload.roles = ["DVLATrailers.read"];
     (getValidJwt as jest.Mock) = jest.fn().mockReturnValue(jwtJsonClone);
 
-    const returnValue: APIGatewayIAMAuthorizerResult = await authorizer(event, exampleContext());
+    const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.context).toEqual({
       email: jwtJsonClone.payload.preferred_username,
@@ -159,7 +122,7 @@ describe("authorizer() unit tests", () => {
       employeeId: "1234567",
     };
 
-    const returnValue: APIGatewayIAMAuthorizerResult = await authorizer(event, exampleContext());
+    const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.context).toEqual({
       email: jwtJson.payload.preferred_username,
@@ -181,7 +144,7 @@ describe("authorizer() unit tests", () => {
     (getLegacyRoles as jest.Mock) = jest.fn().mockReturnValue([]);
     jwtJson.payload.roles = ["TechRecord.View", "TechRecord.Amend"];
 
-    const returnValue: APIGatewayIAMAuthorizerResult = await authorizer(event, exampleContext());
+    const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
     expect(returnValue.policyDocument.Statement.length).toEqual(coreFunctionalConfig.length * 2 + 13);
@@ -190,7 +153,7 @@ describe("authorizer() unit tests", () => {
   it("should return an accurate policy based on functional roles", async () => {
     (getLegacyRoles as jest.Mock) = jest.fn().mockReturnValue([]);
 
-    const returnValue: APIGatewayIAMAuthorizerResult = await authorizer(event, exampleContext());
+    const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
     expect(returnValue.policyDocument.Statement.length).toEqual(coreFunctionalConfig.length * 2 + 13);
@@ -209,7 +172,7 @@ describe("authorizer() unit tests", () => {
   it("should return an unauthorised policy response", async () => {
     jwtJson.payload.roles = [];
 
-    const returnValue: APIGatewayIAMAuthorizerResult = await authorizer(event, exampleContext());
+    const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual("Unauthorised");
 
@@ -222,7 +185,7 @@ describe("authorizer() unit tests", () => {
   });
 });
 
-const expectUnauthorised = async (e: APIGatewayRequestAuthorizerEventV2) => {
+const expectUnauthorised = async (e: APIGatewayTokenAuthorizerEvent) => {
   await expect(authorizer(e, exampleContext())).resolves.toMatchObject({
     principalId: "Unauthorised",
   });

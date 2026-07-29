@@ -2,11 +2,9 @@ import { ILogEvent } from "../models/ILogEvent";
 import { JWT_MESSAGE } from "../models/enums";
 import { ILogError } from "../models/ILogError";
 import { HttpStatus } from "@dvsa/cvs-microservice-common/api/http-status-codes";
-import { APIGatewayRequestAuthorizerEventV2, APIGatewayTokenAuthorizerEvent } from "aws-lambda";
+import { APIGatewayTokenAuthorizerEvent } from "aws-lambda";
 
-type AuthorizerEvent = APIGatewayRequestAuthorizerEventV2 | APIGatewayTokenAuthorizerEvent;
-
-export const writeLogMessage = (event: AuthorizerEvent, log: ILogEvent, error?: any) => {
+export const writeLogMessage = (event: APIGatewayTokenAuthorizerEvent, log: ILogEvent, error?: any) => {
   if (!error) {
     log.statusCode = HttpStatus.OK;
     console.log(log);
@@ -15,7 +13,7 @@ export const writeLogMessage = (event: AuthorizerEvent, log: ILogEvent, error?: 
     log.statusCode = HttpStatus.UNAUTHORIZED;
 
     // If the DEBUG_MODE env var is set to true, log the token - only applicable when errors occur
-    log.token = process.env.DEBUG_MODE === "true" ? getAuthorizationToken(event) : undefined;
+    log.token = process.env.DEBUG_MODE === "true" ? event.authorizationToken : undefined;
 
     if (!error.name) {
       logError.message = error as string;
@@ -43,19 +41,6 @@ export const writeLogMessage = (event: AuthorizerEvent, log: ILogEvent, error?: 
     console.error(log);
   }
   return log;
-};
-
-const getAuthorizationToken = (event: AuthorizerEvent): string | undefined => {
-  if ("authorizationToken" in event) {
-    return event.authorizationToken;
-  }
-
-  const authorizationHeader = event.headers?.authorization ?? event.headers?.Authorization;
-  if (authorizationHeader) {
-    return authorizationHeader;
-  }
-
-  return event.identitySource?.find((identitySource) => !!identitySource?.trim());
 };
 
 export enum LogLevel {

@@ -10,15 +10,6 @@ provider:
   name: aws
   runtime: nodejs22.x
   timeout: 60
-  httpApi:
-    authorizers:
-      authoriserFunction:
-        type: request
-        functionName: authoriserFunction
-        payloadVersion: "2.0"
-        enableSimpleResponses: false
-        identitySource:
-          - $request.header.Authorization
 
 functions:
   authoriserFunction:
@@ -26,8 +17,7 @@ functions:
   testFunction:
     handler: tests/handler.test
     events:
-      - httpApi:
-          path: /testFunction
+      - http:
+          path: testFunction
           method: POST
-          authorizer:
-            name: authoriserFunction
+          authorizer: authoriserFunction
